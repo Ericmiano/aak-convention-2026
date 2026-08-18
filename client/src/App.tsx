@@ -1,42 +1,26 @@
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import NotFound from "@/pages/NotFound";
+/** Coastal Civic Modernism: every route lives inside a single Convention-only shell. */
+import { lazy, Suspense } from "react";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
-import { ThemeProvider } from "./contexts/ThemeContext";
+import { ConventionFooter, ConventionHeader } from "./components/ConventionShell";
 import Home from "./pages/Home";
 
+const ProgrammePage = lazy(() => import("./pages/ConventionPages").then((module) => ({ default: module.ProgrammePage })));
+const ThemePage = lazy(() => import("./pages/ConventionPages").then((module) => ({ default: module.ThemePage })));
+const SpeakersPage = lazy(() => import("./pages/ConventionPages").then((module) => ({ default: module.SpeakersPage })));
+const ExperiencePage = lazy(() => import("./pages/ConventionPages").then((module) => ({ default: module.ExperiencePage })));
+const VenuePage = lazy(() => import("./pages/ConventionPages").then((module) => ({ default: module.VenuePage })));
+const BuildToursPage = lazy(() => import("./pages/ConventionPages").then((module) => ({ default: module.BuildToursPage })));
+const RegisterPage = lazy(() => import("./pages/ConventionPages").then((module) => ({ default: module.RegisterPage })));
 
-function Router() {
-  return (
-    <Switch>
-      <Route path={"/"} component={Home} />
-      <Route path={"/404"} component={NotFound} />
-      {/* Final fallback route */}
-      <Route component={NotFound} />
-    </Switch>
-  );
-}
-
-// NOTE: About Theme
-// - First choose a default theme according to your design style (dark or light bg), than change color palette in index.css
-//   to keep consistent foreground/background color across components
-// - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
+function LoadingRoute() { return <div className="route-loading" aria-live="polite">Loading the Convention experience…</div>; }
 
 function App() {
-  return (
-    <ErrorBoundary>
-      <ThemeProvider
-        defaultTheme="light"
-        // switchable
-      >
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
-      </ThemeProvider>
-    </ErrorBoundary>
-  );
+  return <ErrorBoundary><ConventionHeader /><main><Suspense fallback={<LoadingRoute />}><Switch>
+    <Route path="/" component={Home} /><Route path="/programme" component={ProgrammePage} /><Route path="/theme" component={ThemePage} />
+    <Route path="/speakers" component={SpeakersPage} /><Route path="/experience" component={ExperiencePage} /><Route path="/venue" component={VenuePage} />
+    <Route path="/build-tours" component={BuildToursPage} /><Route path="/register" component={RegisterPage} /><Route component={Home} />
+  </Switch></Suspense></main><ConventionFooter /></ErrorBoundary>;
 }
 
 export default App;
