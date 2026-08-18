@@ -13,7 +13,6 @@ const ExperiencePage = lazy(() => import("./pages/ConventionPages").then((module
 const VenuePage = lazy(() => import("./pages/ConventionPages").then((module) => ({ default: module.VenuePage })));
 const BuildToursPage = lazy(() => import("./pages/ConventionPages").then((module) => ({ default: module.BuildToursPage })));
 const RegisterPage = lazy(() => import("./pages/ConventionPages").then((module) => ({ default: module.RegisterPage })));
-
 function LoadingRoute() {
   return <div className="route-loading" aria-live="polite" aria-busy="true"><span className="sr-only">Loading route content</span><div className="route-skeleton" aria-hidden="true"><i /><i /><i /><i /></div></div>;
 }

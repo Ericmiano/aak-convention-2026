@@ -101,3 +101,7 @@ Motion expresses a Convention moving from fragmentation toward alignment. The he
 - **Architectural separation:** Border-based fields replace ambient shadows. Strong radius is reserved for primary image and thematic fields; content sections use asymmetric offset edges to form a reading spine.
 - **Thematic emphasis:** The official theme statement is the homepage’s dark editorial high point, with the Fragility → Adaptation → Resilience sequence treated as a spatial progression rather than a small caption.
 - **Registration honesty:** Until AAK exposes approved booking and payment integrations, the site gives a clear, branded explanation and external handoff rather than mimicking a working checkout.
+
+## Live Information Treatment
+
+Current event information appears as a **source-labelled ticket ledger**, not a dashboard. It borrows the Convention’s rules, paper planes, and indexed fields while keeping the semantic distinction between an expiry-derived source status and actual ticket inventory. The panel leads visitors to the official AAK registration journey for any booking or payment action.

@@ -7,6 +7,7 @@ import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { assets, eventData, themeData, toursData, venueData } from "@/data/conventionData";
 import { ArchitecturalGrid, EventMeta, RegistrationCTA, SectionLabel } from "@/components/ConventionPrimitives";
 import { ProgrammeTimeline } from "@/components/ProgrammeTimeline";
+import { LiveEventPanel } from "@/components/LiveEventPanel";
 
 export default function Home() {
   return <>
@@ -27,6 +28,7 @@ export default function Home() {
       <div className="intro-copy"><p className="lede">AAK’s annual gathering brings practitioners from national and county government, private practice, and academia together to examine the conditions shaping Kenya’s built environment.</p><p>The 2026 Convention is a place to exchange grounded knowledge, test ideas across disciplines, and move professional practice toward resilient, ecologically responsive futures.</p></div>
       <EventMeta />
     </section>
+    <LiveEventPanel />
 
     <section className="theme-section">
       <ArchitecturalGrid tone="dark" /><div className="theme-gridline" aria-hidden="true" /><div className="theme-intro"><SectionLabel index="02" label="The Theme" /><h2>From a field<br />of <em>fragments</em><br />to a shared<br /><strong>structure.</strong></h2></div>
