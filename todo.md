@@ -93,3 +93,15 @@
 - [x] Create a private GitHub repository for the current AAK Convention 2026 source and push the verified project history.
 - [x] Verify the remote repository, branch, and source-control handoff without changing the WordPress live site.
 - [x] Change the new GitHub repository visibility to public and verify that its source is accessible.
+
+## Code-First Production Deployment Checklist
+
+- [ ] Decide whether the React/TypeScript application will replace WordPress at the Convention domain or run alongside it.
+- [ ] Define the code-first deployment, DNS cutover, content-maintenance, and rollback steps for the approved production route.
+
+## WordPress-Migration-Ready Frontend Checklist
+
+- [x] Confirm the public site’s database-free content and live-data boundaries.
+- [x] Add portable Convention content schemas and WordPress field mappings without changing the rendered design.
+- [x] Document a future migration path from the code-first frontend to WordPress while preserving source-labelled live-event information.
+- [x] Validate the frontend build, tests, and migration-reference files.
