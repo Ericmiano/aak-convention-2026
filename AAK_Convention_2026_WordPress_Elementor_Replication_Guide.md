@@ -6,7 +6,7 @@
 
 ## 1. Purpose and scope
 
-This guide explains how to reproduce the current **AAK Annual Convention 2026** website in WordPress with Elementor while preserving the project’s strongest characteristics: its Convention-only identity, architectural editorial layout, accessible motion, source-aware technical-tour content, and safe external registration handoff.
+This guide explains how to reproduce the current **AAK Annual Convention 2026** website in WordPress with Elementor while preserving the project’s strongest characteristics: its Convention-only identity, architectural editorial layout, accessible motion, source-aware technical-tour content, **automatic AAK event-information panel**, and safe external registration handoff.
 
 The aim is **not** to reproduce the React code. The aim is to reconstruct the visitor experience in a WordPress-native way that an AAK content team can maintain after launch. The result should keep the same public routes, visual system, hierarchy, and editorial tone while making routine content changes manageable through WordPress.
 
@@ -19,7 +19,8 @@ The aim is **not** to reproduce the React code. The aim is to reconstruct the vi
 | Programme | Nested Tabs plus Accordion, or a lightweight custom post type | Show day, time, track, title, then progressive disclosure. |
 | Speakers | Placeholder section or dynamic Loop Grid | Never invent speakers, titles, biographies, or portraits. |
 | Technical tours | Dynamic Loop Grid or manually repeated containers | Use documented images, factual captions, and source links. |
-| Registration | Static branded handoff page | Link to the official AAK system in a new tab. |
+| Live event information | Small custom WordPress plugin plus an Elementor shortcode/container | Refresh only public calendar facts, ticket tiers, listed prices, eligibility, and source status. |
+| Registration | Branded handoff page plus live ticket ledger | Link to the official AAK system in a new tab; do not collect payment data. |
 
 ## 2. Required stack and pre-build decisions
 
@@ -35,6 +36,7 @@ Use a current supported WordPress release, a lightweight Elementor-compatible th
 | Code insertion | Elementor Pro Custom Code or a carefully managed snippets plugin | Adds the small scroll-reveal script without editing the theme. |
 | SEO | A single established SEO plugin, configured once | Controls title, meta description, Open Graph, sitemap, and Event schema. |
 | Cache/image optimisation | Hosting-level cache first; then one image optimisation layer if required | Prevents duplicated optimisation plugins and preserves image quality. |
+| Live event source bridge | A small AAK-owned custom plugin—not a generic scraping plugin | Retrieves, sanitises, caches, and exposes the approved public AAK event fields. |
 
 ### 2.2 Safe same-domain draft workflow: use this when no staging domain is available
 
@@ -236,7 +238,8 @@ For a one-off launch with a small content team, you can build sections manually 
 | `programme_session` | Day, start/end time, track, title, detail, speaker, sort order | Tabs/accordion rows. |
 | `technical_tour` | Number, timing label, title, lens, summary, image, image credit, source URL, confirmed status | Experience tour studies and Build Tours field guide. |
 | `speaker` | Name, role, organisation, biography, portrait, session, announcement status | Loop Grid when approved. |
-| `event_setting` or Options page | Registration URL, programme PDF URL, dates, location label, official contact details | Header, CTA, footer, and structured data. |
+| `event_setting` or Options page | Registration URL, programme PDF URL, dates, location label, official contact details, live-source enabled flag | Header, CTA, footer, and structured data. |
+| `aak_live_event_cache` transient | Normalised source title, date range, venue, CPD, ticket entries, programme URL, fetched time | Read-only payload for the live Elementor panel. |
 
 For `technical_tour`, create exactly three initial entries:
 
@@ -247,6 +250,118 @@ For `technical_tour`, create exactly three initial entries:
 | 03 | Kisite Mpunguti Marine Park & Wasini Island | 19 September / post-Convention field study | Marine habitats / coastal ecology |
 
 Store the **source URL** and **image credit/source** alongside every third-party image. Do not leave the image provenance only in a caption on a page.
+
+### 4.3 Add the AAK live event-information bridge
+
+The automatic panel is **not** an Elementor widget that calls the members site directly from the visitor’s browser. The AAK member page currently exposes event information through its own page and an undocumented ticket-data method. The audit found that the browser cannot reliably call that method cross-domain and that it exposes expiry-derived ticket status, not numeric remaining-seat inventory. Therefore, reproduce the current implementation with a small **server-side WordPress plugin** that reads a fixed AAK source, reduces it to approved public fields, caches it for five minutes, and renders a shortcode inside Elementor.[^9]
+
+> **Public language rule:** Use the source wording such as `29 Days Left`, `Available`, or `Closed`. Never relabel this as `tickets left`, `seats remaining`, or `live inventory` unless the AAK platform formally provides a numeric inventory field.
+
+Create an AAK-owned plugin folder named `aak-convention-live-event` in `wp-content/plugins/`. The plugin should be version-controlled or stored with the final handover, rather than pasted into the theme’s `functions.php`. This keeps the source integration independent from theme changes and gives AAK a clear owner for future maintenance.
+
+| Plugin responsibility | Required behavior | Must not do |
+|---|---|---|
+| Source allowlist | Use the fixed approved event URL and fixed AAK ticket method only. | Accept a source URL, event ID, or company ID from a public query parameter. |
+| Retrieval | Use WordPress HTTP functions with a strict timeout and TLS verification. | Fetch the members data in browser JavaScript or through an Elementor HTML widget. |
+| Normalisation | Return only title, date range, venue, CPD points, ticket name, eligibility, KES price, expiry-derived status, source programme URL, and fetched timestamp. | Return source HTML, hidden fields, internal ticket IDs, member data, booking data, or payment data. |
+| Cache | Store normalised data for five minutes; refresh on the next request after expiry. | Request the external members platform on every page view. |
+| Fallback | Render a clear source-unavailable message and the official AAK event-page link. | Leave a blank block or replace factual information with stale, unlabeled guesses. |
+| Public endpoint | If a REST endpoint is used, make it read-only and output only the normalised public payload. | Create a public refresh, update, or payment endpoint. |
+
+#### 4.3.1 Required source contract
+
+Store these values as **plugin constants**, not editable front-end fields:
+
+```text
+AAK_EVENT_SOURCE_URL = https://members.aak.or.ke/eventdetailv2?eid=baM8JnQ3+AaNamasUK2rTg==
+AAK_TICKET_ENDPOINT  = https://members.aak.or.ke/EventDetail4.aspx/reloadRepeater
+AAK_EVENT_ID         = 70965
+AAK_COMPANY_ID       = 12
+AAK_LIVE_CACHE_TTL   = 5 minutes
+```
+
+The event-detail page is the authoritative public source for the current event title, dates, venue label, CPD points, ticket names, listed prices, eligibility, and source status.[^12] The ticket endpoint is an implementation dependency rather than a published API contract. Treat changes to its response shape, availability, or access policy as an AAK members-platform maintenance issue.
+
+#### 4.3.2 Server-side implementation recipe
+
+Use `wp_safe_remote_get()`/`wp_safe_remote_post()` against the fixed allowlisted AAK URLs. WordPress documents its HTTP functions for remote requests and advises a safe remote request function where URL safety needs attention.[^9] Cache the normalised array with the Transients API. A transient expiration is a maximum lifetime, and the cache may disappear sooner, so the plugin must regenerate data safely when the transient is absent.[^10]
+
+The implementation should follow this sequence:
+
+1. Call `get_transient( 'aak_live_event_v1' )`. If it contains a valid array, return it immediately.
+2. Request the fixed event-detail page with a 10–12 second timeout. Parse only the visible event facts: public title, date range, venue label, CPD points, category, event type, and the current programme PDF URL.
+3. POST the fixed JSON request body to the fixed ticket method. Parse the returned public ticket records into `name`, `audience`, `amount`, `currency`, `ticketExpiryDate`, `isActive`, and `ticketTypeActive`.
+4. Derive `status` exactly from the source’s active state and expiry date. If the source is inactive or expired, return `Closed`; otherwise return `N Days Left`. Do not calculate, store, or display a numeric quantity.
+5. Sanitise text using WordPress sanitisation functions, cast amounts to numbers, format the fetched timestamp as UTC internally, and store the resulting array using `set_transient( 'aak_live_event_v1', $data, 5 * MINUTE_IN_SECONDS )`.
+6. If either source request or parse step fails, return a structured error state without overwriting the last valid cache. The rendered panel must show the fallback described in Section 4.3.5.
+
+If the Elementor presentation fetches data asynchronously, register the public read-only route on the `rest_api_init` hook under a versioned namespace such as `aak-convention/v1`. WordPress requires REST routes to be registered on that hook and requires an explicit `permission_callback`; a public read-only route can use `__return_true` only because the payload contains no private data.[^11]
+
+```text
+GET /wp-json/aak-convention/v1/event
+
+Response fields only:
+name, dateRange, venue, cpdPoints, category, eventType,
+tickets[{name, audience, amount, currency, expiryDate, status, isOpen}],
+programmeUrl, sourceUrl, registrationUrl, fetchedAt
+```
+
+Do not expose a `refresh`, `force`, `admin`, or ticket-ID parameter in the public route. Create a separate administrator-only `Clear AAK event cache` action in the plugin settings page if the Secretariat needs an immediate refresh after changing the members platform.
+
+#### 4.3.3 Elementor implementation: place the panel in the right locations
+
+Create a shortcode, for example `[aak_live_event_panel]`, in the custom plugin. The shortcode can either render the complete accessible ticket ledger server-side or output the scoped panel wrapper and retrieve the public REST payload from same-origin JavaScript. The server-rendered approach is preferred because it avoids an empty first paint and is simpler for public event information.
+
+In Elementor, insert a **Shortcode** widget at these two locations:
+
+| Page | Placement | Elementor wrapper class | Why it belongs there |
+|---|---|---|---|
+| Home | Immediately after the Convention introduction/event-metadata field and before the dark Theme field. | `aak-live-event-field` | Gives ticket and current calendar facts early without interrupting the narrative hero. |
+| Registration | Immediately after the dark Registration hero and before the five-step route. | `aak-live-event-field aak-live-event-field--compact` | Lets visitors compare current source details before entering the official booking journey. |
+
+The panel should contain the following in this exact hierarchy:
+
+```text
+07 / CURRENT EVENT INFORMATION
+LIVE SOURCE / AAK EVENT PAGE
+What is open now.
+Source-status explanation
+
+Calendar | Venue | Learning / CPD points
+
+Ticket type | Price | Source status
+Ticket name + eligibility | KES amount | N DAYS LEFT or CLOSED
+
+Last checked [date/time] | Open current programme | Continue to AAK registration
+```
+
+Use the same mineral-paper field, thin rule grid, mono metadata, cardinal status outline, and non-pill buttons described elsewhere in this guide. Do not render it as a generic pricing-card grid. The ticket ledger is a factual publication field.
+
+#### 4.3.4 Example status and pricing rules
+
+| Source condition | Visitor-facing text | Styling |
+|---|---|---|
+| Active ticket with future expiry | `29 DAYS LEFT` or source-equivalent day count | Cardinal red 1px outline; no filled alert background. |
+| Active ticket without a parseable expiry | `AVAILABLE` | Cardinal red 1px outline. |
+| Inactive ticket or passed expiry | `CLOSED` | Muted grey 1px outline. |
+| Currency `KES`, amount `35000` | `KES 35,000` | DM Mono, aligned numeric column. |
+| Member flag = member-only | `MEMBERS ONLY` | Small uppercase metadata below ticket name. |
+| Member flag = member/non-member | `MEMBERS AND NON-MEMBERS` | Small uppercase metadata below ticket name. |
+
+The panel is allowed to show a ticket price that has changed on the source. It must never show a manually hardcoded price alongside a `Live source` label.
+
+#### 4.3.5 Failure, stale-data, and source-change behavior
+
+If a source request fails and no valid cache is available, replace the ledger with this compact fallback:
+
+> **Current AAK information**  
+> **View the latest ticket and event details.**  
+> The official AAK event page remains the current source while this page reconnects.  
+> `[Open AAK event page ↗]`
+
+If a valid cached payload exists but the fresh request fails, show the cached ledger with `Last checked [timestamp]` and a discreet note that the official AAK event page remains the latest booking source. Do not hide the age of cached data. In all failure states, keep the external AAK event-page button visible and working.
+
+Test this state before launch by temporarily blocking outbound access in a local/staging test, or by using an administrator-only test switch that never exists for public visitors. Check desktop and mobile, keyboard focus, the fallback button, and the restoration of normal data after the source returns.
 
 ## 5. Build the Theme Builder templates
 
@@ -294,6 +409,10 @@ Do not use a background image behind hero text. Place the image in its own conta
 ### 6.2 Convention introduction
 
 Use a three-column grid on desktop: `section label / editorial lede / event metadata`. On mobile, stack label, lede, then metadata. The metadata can be three small columns: dates, place, CPD points. Use a rule and background contrast; no shadow.
+
+### 6.2a Live event-information field
+
+Immediately after the introduction, add the `[aak_live_event_panel]` Shortcode widget inside an Elementor container with the `aak-live-event-field` class. Do not manually rebuild the ticket rows in Elementor; the plugin-controlled output prevents a visual `Live source` claim from drifting away from the actual source values. The panel must show its own last-checked timestamp, current programme action, and official AAK registration action.
 
 ### 6.3 Theme: the emotional high point
 
@@ -397,11 +516,12 @@ This is a branded, transparent handoff page. Construct it as follows:
 1. Dark hero with `09 / Registration`, title, short statement, and a cardinal-red or near-white external button.
 2. A vertical five-step route: `Ticket selection → Registration details → Booking type → Payment → Confirmation`.
 3. Editorial copy explaining that the official AAK registration journey opens in a new tab and shows the current ticket availability and available payment options.
-4. One clear external button to the known official registration URL.
+4. Add the `[aak_live_event_panel]` shortcode after the hero, then show the five-step route below it.
+5. Include the current programme action and one clear external button to the known official registration URL.
 
 Use `target="_blank"` and `rel="noopener noreferrer"` if you insert a custom HTML link. Elementor’s Link settings also allow opening a URL in a new window.
 
-Do **not** use an Elementor Form to collect payment details. Until AAK provides an approved integration, that would create a misleading and potentially unsafe booking experience.
+Do **not** use an Elementor Form to collect payment details. Until AAK provides an approved integration, that would create a misleading and potentially unsafe booking experience. The live panel shows source-derived ticket details only; it does not create a booking, reserve stock, or collect payment data.
 
 ## 8. Add the reusable CSS layer
 
@@ -605,6 +725,18 @@ Add the approved meta description, social image, canonical URL, and `Event` stru
 4. Do not add a visual loading screen. Use Elementor’s normal rendering or a quiet skeleton only when a genuinely asynchronous dynamic section requires it.
 5. Minimise third-party scripts, font variants, popup plugins, and motion plugins. The site’s editorial character should come from layout and imagery, not from heavy effects.
 
+### 11.4 Live event-information QA
+
+| Check | Pass condition |
+|---|---|
+| Public source values | Date range, venue label, CPD, ticket names, KES amounts, eligibility, and status match the official AAK event page at the time tested. |
+| Source-status wording | Open/closed labels are derived from active/expiry status and do not claim seats, capacity, or numeric inventory. |
+| Cache | First live retrieval is cached for five minutes; repeated visitor requests do not re-query the members platform during the cache window. |
+| Error handling | No JavaScript error or blank field occurs if the members source is unavailable. |
+| Fallback | The fallback message and official AAK event-page button render on desktop and mobile. |
+| Security | No hidden ticket fields, member data, booking data, payment data, or arbitrary remote URL is exposed. |
+| Operations | An AAK administrator can clear the event cache after a confirmed source update. |
+
 ## 12. Registration and platform dependency plan
 
 The WordPress site can create a **visually continuous transition**, but it cannot fix the separate `members.aak.or.ke` experience unless its owner updates that platform or provides an approved API/integration.
@@ -613,10 +745,11 @@ The WordPress site can create a **visually continuous transition**, but it canno
 |---|---|---|
 | Nairobi Biennale banner on registration site | Remove or replace it in the member platform’s event configuration | Keep the public site Biennale-free and do not repeat the asset. |
 | Different registration visual system | Reskin members-platform event and booking templates | Preserve clear AAK-branded handoff page. |
-| Real ticket/payment data | Provide an approved booking/payment API or embedded provider flow | Do not simulate forms or availability. |
+| Public ticket catalogue/status | The members platform maintains the source page and undocumented ticket method, or provides a documented replacement API | Use the server-side live bridge, cache for five minutes, label status as expiry-derived, and retain the AAK source link. |
+| Real ticket inventory/payment data | Provide a documented booking/payment API with numeric inventory and approved payment flow | Do not simulate inventory, forms, reservation, or payment. |
 | Venue/date inconsistency | Secretariat confirms one canonical venue name and date range | Use Diani, Kenya and the approved date label until confirmation. |
 
-When AAK later provides a secure integration, add the true ticket-to-confirmation journey as a separate scoped project. It will need authentication, payment security, data protection review, error states, confirmation emails, and an authoritative registration data source. It should not be improvised inside a visual page builder.
+When AAK later provides a secure integration, add the true ticket-to-confirmation journey as a separate scoped project. It will need authentication, payment security, data protection review, error states, confirmation emails, and an authoritative registration data source. It should not be improvised inside a visual page builder. Until then, the automated panel is an informed public-event display—not a checkout or inventory system.
 
 ## 13. Controlled same-domain launch and rollback procedure
 
@@ -633,6 +766,7 @@ Complete these actions before the launch window—not during it.
 5. Create a fresh full host backup and export the live menu/customizer/settings record again.
 6. Prepare a short internal launch log with exact time, people present, new home page title, old home page title, new menu name, old menu name, new header/footer template names, and rollback sequence.
 7. Clear no caches yet. Caches should be cleared after the switch, not before it.
+8. Confirm the `aak-convention-live-event` plugin is active, the source constants are correct, and the pre-launch cache contains a valid normalised payload. Do not rely on the first public visitor to discover an integration failure.
 
 ### 13.2 Launch steps: perform in this order
 
@@ -645,7 +779,7 @@ Complete these actions before the launch window—not during it.
 | 5 | Go to **Settings → Reading**. Select `A static page`, then choose the new AAK 2026 home page as `Home page`; save changes. WordPress uses this setting to determine the site front page.[^6] | Open the root domain in an incognito browser. |
 | 6 | Only now convert the old home page to Draft or leave it published but unlinked under a legacy slug, according to AAK’s archive policy. | Root domain still resolves to the new home page. |
 | 7 | If a theme change was approved, activate the prepared theme now and recheck all public routes. If no theme change is required, leave the current theme active. | Header, footer, forms, menus, and legacy pages render correctly. |
-| 8 | Clear the host/CDN/page cache, regenerate Elementor CSS/data if required, and test again while logged out. | No old cached header, missing CSS, or 404 remains. |
+| 8 | Clear the host/CDN/page cache, regenerate Elementor CSS/data if required, clear the live-event transient once, and test again while logged out. | No old cached header, missing CSS, 404, blank live panel, or misleading ticket-status label remains. |
 
 ### 13.3 Five-minute rollback plan
 
@@ -673,9 +807,10 @@ Follow this order. It reduces rework and keeps the site publishable during conte
 | 5 | Draft Home, Theme, Programme, Venue | Core narrative and factual event data are in place. |
 | 6 | Draft Experience and technical tours | Three cited location studies load with correct images. |
 | 7 | Draft Build Tours and Registration | Field-guide consistency and honest handoff are in place. |
-| 8 | Draft speakers placeholder or approved roster | No fabricated people data. |
-| 9 | Mobile, keyboard, reduced-motion, SEO, performance QA | All acceptance tests pass. |
-| 10 | Controlled same-domain changeover | New front page, menu, templates, and cache work; rollback is tested. |
+| 8 | Live event-source bridge and source-labelled ledger | Current AAK facts, ticket prices, source status, fallback, and external handoff are verified. |
+| 9 | Draft speakers placeholder or approved roster | No fabricated people data. |
+| 10 | Mobile, keyboard, reduced-motion, SEO, performance QA | All acceptance tests pass. |
+| 11 | Controlled same-domain changeover | New front page, menu, templates, cache, and live source panel work; rollback is tested. |
 
 ## 15. Final pre-launch checklist
 
@@ -688,6 +823,7 @@ Before publishing, check each item manually.
 | Theme | Official theme copy appears in the dark editorial high-point section. |
 | Technical tours | Images have permission/source records and source links work. |
 | Registration | Every Register CTA opens the correct official system; no fake checkout exists. |
+| Live event panel | Source facts and ticket-status language match the AAK event page; fallback action works; no numeric inventory is claimed. |
 | Mobile | Tested on at least one iOS and one Android viewport/device. |
 | Accessibility | Keyboard navigation, focus state, heading hierarchy, alt text, and reduced motion checked. |
 | SEO | Title, description, Open Graph, canonical, sitemap, and Event JSON-LD validated. |
@@ -704,3 +840,7 @@ Before publishing, check each item manually.
 [^6]: [WordPress, “Settings Reading Screen”](https://wordpress.org/documentation/article/settings-reading-screen/)
 [^7]: [WordPress, “Manage Plugins”](https://wordpress.org/documentation/article/manage-plugins/)
 [^8]: [WordPress.org, “Elementor Website Builder”](https://wordpress.org/plugins/elementor/)
+[^9]: [WordPress Developer Resources, “wp_remote_post()”](https://developer.wordpress.org/reference/functions/wp_remote_post/)
+[^10]: [WordPress Developer Resources, “Transients API”](https://developer.wordpress.org/apis/transients/)
+[^11]: [WordPress Developer Resources, “register_rest_route()”](https://developer.wordpress.org/reference/functions/register_rest_route/)
+[^12]: [Architectural Association of Kenya, “AAK Annual Convention 2026 Event Registration”](https://members.aak.or.ke/eventdetailv2?eid=baM8JnQ3%2BAaNamasUK2rTg%3D%3D)

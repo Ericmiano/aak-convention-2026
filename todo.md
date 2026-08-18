@@ -57,8 +57,14 @@
 - [x] Run typecheck, production build, tests, desktop/mobile verification, and source-unavailable fallback validation.
 - [x] Simulate an AAK source failure and verify the homepage and registration fallback panel render without client errors.
 - [x] Capture desktop and mobile fallback-state checks and confirm the official AAK event link remains usable.
-- [ ] Deliver the outcome and document any platform dependency.
+- [x] Deliver the outcome and document any platform dependency.
 
 **Authoritative source:** `https://members.aak.or.ke/eventdetailv2?eid=baM8JnQ3+AaNamasUK2rTg==`
 
 **Approved approach:** Automatic public-information panel. The panel may display only source-backed calendar details, ticket tiers, KES prices, eligibility, and expiry-derived status. It must not report invented numeric stock levels or collect booking/payment data.
+
+## Live Event-Information Guide Update Checklist
+
+- [x] Review the implemented source route, live panel, fallback state, and audit notes for WordPress-equivalent requirements.
+- [x] Add the automatic event-information integration, fallback, status language, and source-ownership guidance to the Elementor replication guide.
+- [x] Deliver the revised guide.
