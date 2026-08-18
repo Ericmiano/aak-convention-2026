@@ -3,6 +3,7 @@ import { lazy, Suspense } from "react";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ConventionFooter, ConventionHeader } from "./components/ConventionShell";
+import { MotionDirector } from "./components/MotionDirector";
 import Home from "./pages/Home";
 
 const ProgrammePage = lazy(() => import("./pages/ConventionPages").then((module) => ({ default: module.ProgrammePage })));
@@ -16,7 +17,7 @@ const RegisterPage = lazy(() => import("./pages/ConventionPages").then((module) 
 function LoadingRoute() { return <div className="route-loading" aria-live="polite">Loading the Convention experience…</div>; }
 
 function App() {
-  return <ErrorBoundary><ConventionHeader /><main><Suspense fallback={<LoadingRoute />}><Switch>
+  return <ErrorBoundary><MotionDirector /><ConventionHeader /><main><Suspense fallback={<LoadingRoute />}><Switch>
     <Route path="/" component={Home} /><Route path="/programme" component={ProgrammePage} /><Route path="/theme" component={ThemePage} />
     <Route path="/speakers" component={SpeakersPage} /><Route path="/experience" component={ExperiencePage} /><Route path="/venue" component={VenuePage} />
     <Route path="/build-tours" component={BuildToursPage} /><Route path="/register" component={RegisterPage} /><Route component={Home} />

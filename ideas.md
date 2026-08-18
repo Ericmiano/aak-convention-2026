@@ -90,3 +90,7 @@ The wordmark uses a condensed, stacked `AAK / CONVENTION / 2026` lock-up integra
 ## Fluid Refinement Direction
 
 The updated execution takes **soft spatial layering** from the `event-spark` reference without importing its burgundy gradient or generic rounded-card treatment. Primary images and major content fields become gently radiused, inset surfaces with warm paper depth; buttons use a more tactile, rounded profile; and open programme details use a softer raised state. The Convention’s editorial index, typography, and AAK Oxide hierarchy remain intact, while hard full-bleed blocks are turned into a sequence of calmer, more connected spatial moments.
+
+## Motion System
+
+Motion expresses a Convention moving from fragmentation toward alignment. The header carries a fine reading-progress rule, major editorial fields reveal as they enter the visitor’s reading path, and tectonic lines settle into their contextual anchors. The hero responds gently to desktop pointer movement, giving the architectural image a little depth without becoming parallax. Programme rows deepen and extend when opened, while buttons and image frames respond with compact tactile feedback. All movement is transform- and opacity-based, under 900 ms, and removed for visitors who prefer reduced motion.
