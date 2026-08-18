@@ -41,7 +41,7 @@ export default function Home() {
     </section>
 
     <section className="experience-section">
-      <div className="experience-image"><img src={assets.people} alt="Built-environment professionals working around architectural drawings" loading="lazy" /><p>Professional exchange,<br />made tangible.</p></div>
+      <div className="experience-image"><img src={assets.people} alt="Built-environment professionals working around architectural drawings" loading="lazy" /><span className="image-metadata">Diani / Professional practice / 2026</span><p>Professional exchange,<br />made tangible.</p></div>
       <div className="experience-copy"><SectionLabel index="04" label="The Convention Experience" /><h2>More than<br />the session<br /><em>room.</em></h2><p>The programme extends through networking, the opening cocktail, a baraza on practice, team activity, the Closing Gala Dinner, and technical visits that put Diani and Kwale’s built environment into context.</p><Link href="/experience" className="button-outline">Explore the experience <ArrowUpRight size={17} /></Link></div>
     </section>
 

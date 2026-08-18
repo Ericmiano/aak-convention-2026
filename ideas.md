@@ -86,3 +86,7 @@ The wordmark uses a condensed, stacked `AAK / CONVENTION / 2026` lock-up integra
 - **Tectonic rules:** Fragmented lines must resolve into a meaningful anchor—an image edge, metadata band, section index, programme row, or caption—so that they communicate structure in transition rather than act as generic background decoration.
 - **Page identity:** The programme reads as a working schedule with a live-day index; the theme reads as a civic position paper with an explicit fragility-to-resilience sequence; and the venue page connects its linework to place, climate, and material context.
 - **Attendee-facing guidance:** All public copy speaks to Convention visitors in calm institutional language. Registration guidance explains the trusted AAK journey and its visitor outcomes without exposing implementation terminology.
+
+## Fluid Refinement Direction
+
+The updated execution takes **soft spatial layering** from the `event-spark` reference without importing its burgundy gradient or generic rounded-card treatment. Primary images and major content fields become gently radiused, inset surfaces with warm paper depth; buttons use a more tactile, rounded profile; and open programme details use a softer raised state. The Convention’s editorial index, typography, and AAK Oxide hierarchy remain intact, while hard full-bleed blocks are turned into a sequence of calmer, more connected spatial moments.

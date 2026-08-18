@@ -13,7 +13,7 @@ function PageHero({ number, eyebrow, title, text, image, variant = "standard" }:
 }
 
 export function ProgrammePage() {
-  return <><PageHero number="01" eyebrow="Programme" variant="programme" title={<>The work<br />ahead, <em>in room.</em></>} text="A day-based programme structured around resilient practice, policy, people, place, and construction." image={assets.people} /><section className="programme-page"><div className="programme-page-intro"><p>Programme content below reflects the current AAK source. Times, speakers, and activities remain subject to the Secretariat’s final confirmation.</p><a href={eventData.programmeUrl} target="_blank" rel="noreferrer" className="button-outline">Open source programme <Download size={17} /></a></div><ProgrammeTimeline /></section><RegistrationCTA compact /></>;
+  return <><PageHero number="01" eyebrow="Programme" variant="programme" title={<>The work<br />ahead, <em>in room.</em></>} text="A day-based programme structured around resilient practice, policy, people, place, and construction." image={assets.people} /><section className="programme-page"><div className="programme-page-intro"><p>The Secretariat updates the programme as the Convention approaches. Use this page alongside your registration communications for the latest schedule.</p><a href={eventData.programmeUrl} target="_blank" rel="noreferrer" className="button-outline">Open programme PDF <Download size={17} /></a></div><ProgrammeTimeline /></section><RegistrationCTA compact /></>;
 }
 
 export function ThemePage() {

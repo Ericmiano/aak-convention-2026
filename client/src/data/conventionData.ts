@@ -84,7 +84,7 @@ export const toursData = [
 export const venueData = {
   name: "Diamond Leisure Beach & Golf Resort",
   location: "Diani, Kenya",
-  note: "Venue name should be reconfirmed against AAK’s final approved event data before public launch.",
+  note: "For the latest venue information, please refer to the secure AAK registration page.",
   copy: "Diani gives the Convention a setting in which questions of climate, infrastructure, material practice, community, and the coastal environment can be considered in lived context—not only from the conference room.",
 };
 
