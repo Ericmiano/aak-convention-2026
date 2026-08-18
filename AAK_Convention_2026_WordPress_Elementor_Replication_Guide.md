@@ -1,50 +1,57 @@
-# Rebuilding the AAK Annual Convention 2026 Website in WordPress with Elementor
+# Rebuilding the AAK Annual Convention 2026 Website with Free WordPress and Elementor Tools
 
-**Prepared for:** Architectural Association of Kenya  
-**Implementation target:** WordPress + Elementor  
-**Recommended approach:** Elementor Pro, a lightweight theme, a small set of reusable templates, and structured content for the programme, speakers, and technical tours.
+**Implementation target:** Self-hosted WordPress + Elementor Free  
+**Budget assumption:** No Elementor Pro, no ACF Pro, no paid theme, no paid template kit, and no paid booking, form, or animation add-on.  
+**What you still need:** WordPress administrator access, hosting backup access, the ability to install free plugins, and either basic PHP support or a developer for the live AAK event-information bridge.
 
-## 1. Purpose and scope
+## 1. What this free-tier guide does and does not assume
 
-This guide explains how to reproduce the current **AAK Annual Convention 2026** website in WordPress with Elementor while preserving the project’s strongest characteristics: its Convention-only identity, architectural editorial layout, accessible motion, source-aware technical-tour content, **automatic AAK event-information panel**, and safe external registration handoff.
+This guide recreates the AAK Annual Convention 2026 public site using **Elementor Free** and free WordPress-compatible tools. It preserves the public pages, Coastal Civic Modernism visual direction, technical-tour studies, accessible motion, and automatic AAK event-information panel. It deliberately does **not** assume Elementor Pro’s Theme Builder, Loop Grid, Forms, Custom Code, Dynamic Tags, or custom-CSS controls.
 
-The aim is **not** to reproduce the React code. The aim is to reconstruct the visitor experience in a WordPress-native way that an AAK content team can maintain after launch. The result should keep the same public routes, visual system, hierarchy, and editorial tone while making routine content changes manageable through WordPress.
+> The automatic event panel does **not** require a paid service. It does require a small WordPress plugin or code snippet because the public AAK member event source cannot be read safely by a visitor’s browser across domains. This is a technical requirement, not a premium licence requirement.
 
-> **Important constraint:** Do not imitate ticket availability, payment capture, M-PESA processing, or confirmation states inside Elementor unless AAK has an approved integration with the real booking system. The current site deliberately provides a branded handoff to the official AAK registration platform. Elementor should preserve that honesty rather than create a convincing but non-functional checkout.
-
-| Area | Elementor implementation | Editorial rule |
+| Need | Free solution | Do not use for this project |
 |---|---|---|
-| Header and footer | Elementor Theme Builder templates | Reuse sitewide; do not duplicate them page by page. |
-| Public content routes | Elementor Pages | One page per public route; avoid one long page disguised as multiple routes. |
-| Programme | Nested Tabs plus Accordion, or a lightweight custom post type | Show day, time, track, title, then progressive disclosure. |
-| Speakers | Placeholder section or dynamic Loop Grid | Never invent speakers, titles, biographies, or portraits. |
-| Technical tours | Dynamic Loop Grid or manually repeated containers | Use documented images, factual captions, and source links. |
-| Live event information | Small custom WordPress plugin plus an Elementor shortcode/container | Refresh only public calendar facts, ticket tiers, listed prices, eligibility, and source status. |
-| Registration | Branded handoff page plus live ticket ledger | Link to the official AAK system in a new tab; do not collect payment data. |
+| Page layouts | Elementor Free containers, headings, images, buttons, icons, HTML and Shortcode widgets | Paid Elementor template kits or generic conference templates. |
+| Header/footer | **Header Footer Builder for Elementor** (free) | Elementor Pro Theme Builder. |
+| Global colors/fonts | Elementor Free Site Settings, plus scoped CSS in WordPress Additional CSS or a child theme | Paid custom-CSS controls per widget. |
+| Programme and tour layout | Manually duplicated Elementor containers, then saved as simple reusable templates where available | Elementor Pro Loop Grid or Dynamic Tags. |
+| Structured content | WordPress pages/posts, or free **Custom Post Type UI** plus free **ACF** only if a developer will output the data with PHP/shortcodes | ACF Pro repeaters, flexible content, options pages, or gallery fields. |
+| Motion | Elementor Free entrance effects sparingly, plus a free Code Snippets plugin or child-theme JavaScript for reveal motion | Paid animation add-ons. |
+| Automatic AAK event panel | Small custom WordPress plugin, shortcode, WordPress HTTP API, and Transients cache | Browser-side scraping, iframe checkout, or a fake ticket system. |
+| Registration | External link to the official AAK event/booking page | Elementor payment or registration forms. |
 
-## 2. Required stack and pre-build decisions
+## 2. Free software to install
 
-### 2.1 Recommended software
+Install only what is needed. Before each plugin installation, take a host backup and confirm that a similar active plugin does not already exist.
 
-Use a current supported WordPress release, a lightweight Elementor-compatible theme, and **Elementor Pro**. Elementor Pro is recommended because the Theme Builder is used to create and assign sitewide headers and footers; Elementor documents that Theme Builder manages site-part templates and their display conditions.[^1]
+| Order | Free tool | What it does | Why it is appropriate |
+|---:|---|---|---|
+| 1 | **Elementor Website Builder** | Builds the public draft pages. | The free page builder is sufficient for the site’s containers, type, images, buttons, and responsive layouts. |
+| 2 | **Hello Elementor** theme | Provides a minimal theme base. | It avoids imposing a competing visual system. Install it during drafting; do not activate it until launch if the live site uses another theme. |
+| 3 | **Header Footer Builder for Elementor** | Creates Elementor-based headers and footers with page/global conditions. | Its WordPress.org description states it works with Elementor Free and supports header/footer display conditions.[^1] |
+| 4 | **Custom Post Type UI** — optional | Registers content types such as `technical_tour` or `speaker`. | It provides a free interface for custom post types and taxonomies.[^2] |
+| 5 | **Advanced Custom Fields** — optional, free version | Adds simple fields such as a tour lens, source URL, timing label, and credit. | The free plugin supports custom fields and can register post types/taxonomies; avoid its Pro-only repeater, flexible-content, options-page, gallery, and clone features.[^3] |
+| 6 | **Code Snippets** — optional, free version | Safely holds small PHP/JS snippets when a dedicated custom plugin is not available. | Use it only for the reveal motion or the live panel if you cannot create a proper plugin file. |
+| 7 | One existing free SEO/caching solution | Manages basic SEO and caching if the site does not already have them. | Reuse an approved existing plugin rather than installing duplicates. |
 
-| Component | Recommendation | Why it is needed |
-|---|---|---|
-| Theme | **Hello Elementor** or another lightweight, well-maintained theme | Keeps theme styling from competing with the custom editorial design. |
-| Page builder | **Elementor Pro** | Theme Builder, Custom CSS, Loop Grid, Forms if needed, and template conditions. |
-| Structured content | **Advanced Custom Fields Pro** and either **Custom Post Type UI** or registered post types in a small site plugin | Makes tours, sessions, and speakers maintainable without editing page layouts. |
-| Code insertion | Elementor Pro Custom Code or a carefully managed snippets plugin | Adds the small scroll-reveal script without editing the theme. |
-| SEO | A single established SEO plugin, configured once | Controls title, meta description, Open Graph, sitemap, and Event schema. |
-| Cache/image optimisation | Hosting-level cache first; then one image optimisation layer if required | Prevents duplicated optimisation plugins and preserves image quality. |
-| Live event source bridge | A small AAK-owned custom plugin—not a generic scraping plugin | Retrieves, sanitises, caches, and exposes the approved public AAK event fields. |
+### 2.1 Exact installation procedure
 
-### 2.2 Safe same-domain draft workflow: use this when no staging domain is available
+1. Log in with a WordPress Administrator account.
+2. Go to **Plugins → Add New**.
+3. Search `Elementor Website Builder`, verify the publisher, select **Install Now**, then **Activate**.
+4. Repeat for `Header Footer Builder for Elementor`. Do not create a global header or footer yet.
+5. If the site needs editable tour/speaker records, install `Custom Post Type UI` and `Advanced Custom Fields`. If the page count is small and content will rarely change, skip both and build the three tours manually in Elementor.
+6. Go to **Appearance → Themes → Add New**, search `Hello Elementor`, select **Install**, but keep the existing live theme active while you build drafts.
+7. Open **Plugins** and take a screenshot of the full active-plugin list. This is part of the rollback record.
 
-**Yes. You can build the redesign on unpublished new draft pages within the existing WordPress installation.** You do not need another domain for this approach. The critical rule is that you must isolate the draft pages and their templates from the live site until the changeover window.
+> Do not install Elementor Pro, Elementor Pro extensions, a paid theme, or a “premium unlocked” plugin. Do not install multiple cache, security, SEO, or header/footer plugins because they can conflict with the live site.
 
-Use the following naming convention. Do not reuse the current public titles or slugs while the old site is live.
+## 3. Safe same-domain draft workflow
 
-| Draft page title | Temporary draft slug | Final public slug at launch |
+You can build on the existing WordPress domain using unpublished draft pages. You do **not** need a second or dormant domain.
+
+| Draft title | Temporary slug | Final slug |
 |---|---|---|
 | `AAK 2026 — Draft — Home` | `/aak-2026-draft-home/` | `/` |
 | `AAK 2026 — Draft — Programme` | `/aak-2026-draft-programme/` | `/programme/` |
@@ -55,792 +62,396 @@ Use the following naming convention. Do not reuse the current public titles or s
 | `AAK 2026 — Draft — Venue` | `/aak-2026-draft-venue/` | `/venue/` |
 | `AAK 2026 — Draft — Registration` | `/aak-2026-draft-registration/` | `/register/` |
 
-WordPress supports saving work as drafts and opening previews in desktop, tablet, mobile, or a new browser tab.[^5] Give review access only to logged-in AAK administrators/editors unless a separate, approved temporary-preview mechanism is already available on the site.
+WordPress lets authors save a page as a draft and use a preview without making it public.[^4] Keep the pages private or draft until their full content, navigation, and external registration links are approved.
 
-> **Do not make a draft page the front page. Do not add draft pages to the public menu. Do not publish a new sitewide header/footer with an `Entire Site` condition. Do not switch the active WordPress theme during the draft phase.** Any of those actions can affect visitors to the existing live site.
+### 3.1 Things you must not change during drafting
 
-#### 2.2.1 The safe template strategy
+| Existing live setting | Draft-phase instruction |
+|---|---|
+| Active theme | Leave it active. Do not activate Hello Elementor just to test a single draft page. |
+| Current header/footer | Leave it untouched and public. |
+| Current primary menu | Do not edit it in place. Create a separate `AAK 2026 Primary — Draft` menu. |
+| Static front page | Do not change Settings → Reading until launch. |
+| Existing global colors/fonts | Do not delete, rename, or overwrite them. |
+| Existing Customizer CSS | Copy it into a dated text file; do not clear it. |
+| Existing plugins | Do not deactivate unknown plugins to make the admin panel look cleaner. |
 
-Use one of the following approaches. **Approach A is safest** when the existing site already has a live header/footer or uses an existing Elementor system.
+### 3.2 Create a restoration record before editing
 
-| Approach | How it works | Best use | Risk level |
-|---|---|---|---|
-| **A. Draft-page bodies first** | Build each draft page body in Elementor. The live site header/footer remains visible around the preview until launch. Save the future header/footer as unused Elementor templates or as draft page sections. | Existing live site must not change at all. | Lowest. |
-| **B. Page-specific draft templates** | Create a new Elementor Header and Footer, then set their display conditions to include only the named draft pages. | You need stakeholders to preview the full new shell before launch. | Low, but verify conditions twice. |
-| **C. Duplicate-page testing with a maintenance window** | Build pages as drafts; only set sitewide Theme Builder conditions in a short approved launch window. | Full redesign replacing the entire public site. | Moderate; needs a rollback owner. |
-
-For Approach A, create two saved Elementor templates named `AAK 2026 / Draft Header` and `AAK 2026 / Draft Footer`. Do **not** assign display conditions. If a stakeholder needs to see the proposed header/footer while reviewing a draft page, insert those saved templates at the top and bottom of that draft page temporarily. Remove them before converting the templates into true Theme Builder header/footer templates at launch.
-
-For Approach B, in **Templates → Theme Builder**, create the header/footer but set display conditions one page at a time, for example `Include → Singular → Pages → AAK 2026 — Draft — Home`. Repeat for the other draft pages. Review every live page in an incognito browser after saving the conditions. If Elementor cannot select an unpublished page in the condition selector on your version, return to Approach A instead of publishing the page simply to make it selectable.
-
-### 2.3 Before touching anything: create a restoration record
-
-Do this before installing Elementor or changing any setting. It is how you protect the existing live system.
-
-1. Ask the hosting provider for a **full host-level backup** that includes files and database. Record the timestamp and the restoration process.
-2. In WordPress, record the active theme, active child theme, WordPress version, PHP version, and all active plugins. Take screenshots of **Plugins**, **Appearance → Themes**, **Appearance → Menus**, **Settings → Reading**, **Settings → Permalinks**, and the current homepage.
-3. Record the existing home-page setting: in **Settings → Reading**, note whether the site uses `Your latest posts` or `A static page`, and record the named Home and Posts pages. WordPress uses this screen to choose a static front page.[^6]
-4. Export the existing menus if the current menu plugin supports it; otherwise take screenshots and copy every menu item, URL, target, and order into a spreadsheet.
-5. Copy any existing custom CSS from **Appearance → Customize → Additional CSS**, theme settings, Elementor Custom CSS, and snippet/code plugins into a dated text file. Do not delete it.
-6. Note all active caching, security, redirect, page-builder, and header/footer plugins. Do not deactivate unknown plugins on a live site just to “clean things up.”
-7. Open the live site in a private/incognito browser and capture screenshots of every current important route. This is the visual rollback reference.
-
-### 2.4 Do not mix design systems during the draft phase
-
-The finished redesign should use Elementor Site Settings for global colors and global fonts, because Elementor’s centralized controls are designed to keep a visual system consistent.[^2][^3] However, **do not reset existing global Elementor fonts, colors, theme typography, or theme button defaults while the legacy live pages still depend on them.** Those changes may restyle live pages immediately.
-
-During the draft phase, use one of these two isolation methods:
-
-1. Apply the AAK styles through classes scoped to the new draft-page wrapper, for example `aak-convention-draft`, and use the scoped CSS in Section 8. This is the safest method on an established site.
-2. Create new global colors/fonts with unique names such as `AAK 2026 / Cardinal Red` and `AAK 2026 / Display`, then use only those new values on draft pages. Do not rename or delete old global entries until after the live changeover.
-
-At launch, when old pages are no longer being served, consolidate the whole site around the new global settings. Do not delete a global font/color before checking whether an existing live Elementor template still references it.
-
-## 3. Build the global design system first
-
-Do this before constructing any page. It prevents spacing, color, and type from drifting as additional pages are built.
-
-### 3.0 Install the required software: exact dashboard procedure
-
-Complete this **after** the backup and restoration record in Section 2.3. WordPress documents the dashboard installation sequence as **Plugins → Add New → search → Install Now → Activate** and recommends a current backup before plugin updates.[^7]
-
-| Order | What to install | Exact action | Draft-phase rule |
-|---:|---|---|---|
-| 1 | Elementor Website Builder | Go to **Plugins → Add New**. Search `Elementor Website Builder`. Check the plugin author and compatibility notice. Click **Install Now**, then **Activate**. | Activating Elementor does not change a page until you edit/build with it. |
-| 2 | Elementor Pro | Download the licensed `.zip` from the AAK Elementor account. Go to **Plugins → Add New → Upload Plugin**, select the ZIP, click **Install Now**, then **Activate**. Connect/activate the license when prompted. | Do not create sitewide Theme Builder conditions yet. |
-| 3 | Hello Elementor (optional, do not activate yet) | Go to **Appearance → Themes → Add New**. Search `Hello Elementor`, install it, but leave the current live theme active during drafts. | Theme activation affects the whole site; postpone it to the approved launch window. |
-| 4 | Advanced Custom Fields Pro (recommended for managed content) | Upload/install from AAK’s valid ACF Pro licence account, then activate. | Create fields only; they do not alter public pages by themselves. |
-| 5 | Custom Post Type UI (optional) | Install from **Plugins → Add New** only if you do not have a small custom plugin/developer registering the content types. | Register content types with `publicly_queryable` only when ready; do not expose incomplete content. |
-| 6 | One SEO plugin and one caching/image layer | Reuse an existing approved plugin if one is already present. Do not install a competing duplicate. | Do not run two SEO, cache, or optimisation plugins in parallel. |
-
-Elementor’s plugin listing documents installation through the WordPress plugin installer and then the normal page workflow of **Pages → Add New → Edit with Elementor**.[^8]
-
-#### 3.0.1 What not to install
-
-Do not install a generic “Elementor addon pack” merely to add visual effects. Do not add a countdown, testimonials, booking, payment, popup, review, or form plugin unless there is an explicit functional need and an AAK owner for the data it collects. The redesign should not use fabricated reviews or a simulated checkout.
-
-#### 3.0.2 Minimum access you need
-
-You need a WordPress account with **Administrator** capability, access to the Elementor Pro licence registered to AAK, access to the current host backup process, and the authority to change the static front page and navigation during launch. If any of these are unavailable, build the guide’s pages as drafts but do not attempt the final switch.
-
-### 3.0.3 Configure Elementor without altering the live site
-
-After activating Elementor/Elementor Pro, complete these actions in this order:
-
-1. Go to **Elementor → Settings**. Under General, ensure `Pages` is enabled as an editable post type. Enable any proposed custom types only after they have been registered and populated.
-2. Do not disable Elementor’s default fonts/colors sitewide if the existing public pages use them. That is a **launch-phase** decision, not a draft-phase decision.
-3. Go to **Elementor → Editor → Customize** or open **Site Settings** from an Elementor editor. Create **new named AAK 2026 global colors and fonts**; do not overwrite existing legacy entries.
-4. Go to **Site Settings → Layout**. Record existing content width and breakpoints before changing them. For drafts, set the container width locally on the draft-page wrapper if global width changes would affect legacy templates.
-5. In the Elementor editor, use the page’s Settings icon to select `Elementor Full Width` or `Elementor Canvas` **only on the draft page**. Use Canvas when you are inserting a temporary draft header/footer into the body; use Full Width when the existing safe header/footer should remain visible.
-6. Go to **Elementor → Tools** only when you need to regenerate CSS/data after a design change. Do not use broad reset or replace-URL tools on a production site without a backup and a clear rollback plan.
-
-### 3.0.4 Existing setting removal: the non-destructive method
-
-The correct draft-phase instruction is not “remove existing settings.” It is **document, isolate, replace deliberately, then remove only after launch**.
-
-| Existing item | Draft phase action | Launch phase action | What never to do |
-|---|---|---|---|
-| Active theme | Leave it active. | Change only if the new pages have been tested with the new theme and a rollback is ready. | Never activate a new theme just to test one draft page. |
-| Existing header/footer | Leave its conditions untouched. | Replace conditions during launch; retain old template as a disabled/archive template. | Never delete the old header/footer before testing the new one in an incognito browser. |
-| Global fonts/colors | Keep them. Add new `AAK 2026` entries. | Migrate current new pages to the new global system; then retire unused legacy entries. | Never reset/rename a legacy global token without checking its current consumers. |
-| Theme Customizer CSS | Copy it to your restoration record. | Remove only rules proven to be obsolete after the whole site is tested. | Never clear the Additional CSS box as a “clean start.” |
-| WordPress menus | Build a second menu, `AAK 2026 Primary — Draft`. | Assign the new menu in the launch window. | Never edit the live menu in place while stakeholders are reviewing drafts. |
-| Existing pages | Keep them published but unlinked, or leave unchanged during drafting. | Archive/draft them only after the new route is live and verified. | Never delete the old homepage before the new front page is live. |
-
-### 3.0.5 Build draft navigation safely
+Take a host-level files-and-database backup. Then record the active theme, WordPress/PHP versions, active plugins, existing header/footer plugin, existing menu structure, the current Home page, and the Settings → Reading configuration. WordPress uses this screen to select a static homepage.[^5]
 
 Create two menus under **Appearance → Menus**:
 
-* `Primary Navigation — Live` — do not edit it during drafting.
-* `AAK 2026 Primary — Draft` — add only the temporary draft-page URLs.
+* `Primary Navigation — Live` — do not alter this while building drafts.
+* `AAK 2026 Primary — Draft` — add only the temporary draft page URLs.
 
-If you use the temporary header/footer inserted into each draft page, link this draft menu directly in the Elementor Nav Menu widget. If you use page-specific Theme Builder conditions, use this draft menu only in the new draft header. The public live menu remains untouched.
+## 4. Configure the free Elementor visual system
 
-### 3.1 Set global colors
+### 4.1 Page layout settings
 
-In WordPress, open **Elementor → Editor → Customize → Global Colors**. Create the following named colors.
+Create each draft page through **Pages → Add New → Edit with Elementor**. In the bottom-left Elementor page settings, use `Elementor Full Width` where the theme header/footer will remain visible. Use `Elementor Canvas` only when a draft header/footer is intentionally inserted as page content; Canvas removes the theme chrome.
 
-| Global color name | Hex value | Use |
+Open **Elementor → Site Settings** and create new global names rather than modifying legacy values:
+
+| Name | Value | Use |
 |---|---:|---|
-| `AAK Cardinal Red` | `#B72028` | Primary action, active state, index number, and rare civic emphasis. |
-| `Mineral Paper` | `#F3F0E8` | Main page background. |
-| `Near White` | `#FAF9F5` | Quiet editorial planes and light media fields. |
-| `Stone Surface` | `#E9E5DB` | Secondary sections and programme surfaces. |
-| `Civic Ink` | `#171714` | Hero, dark theme feature, dark tour guide, footer. |
-| `Rule Grey` | `#D3CEC3` | 1px rules, borders, structural separation. |
-| `Muted Text` | `#68655E` | Supporting copy and metadata. |
-| `Coastal Teal` | `#155950` | Very limited contextual reference; do not use it as a competing primary accent. |
+| `AAK 2026 / Cardinal Red` | `#B72028` | Actions, active states, section numbers, status outlines. |
+| `AAK 2026 / Mineral Paper` | `#F3F0E8` | Primary background. |
+| `AAK 2026 / Near White` | `#FAF9F5` | Light editorial fields. |
+| `AAK 2026 / Stone Surface` | `#E9E5DB` | Secondary surfaces. |
+| `AAK 2026 / Civic Ink` | `#171714` | Dark hero/theme/tour/footer fields. |
+| `AAK 2026 / Rule Grey` | `#D3CEC3` | Borders and fine rules. |
+| `AAK 2026 / Muted Text` | `#68655E` | Secondary text and metadata. |
 
-Do **not** retain a second dark green-black token. `Civic Ink` is the single canonical dark. Do **not** introduce gradients. Avoid broad red background fields except for a genuinely major institutional moment.
+Use these free font choices through Elementor global fonts or the theme’s typography controls:
 
-### 3.2 Set global typography
-
-In **Elementor → Editor → Customize → Global Fonts**, define these styles. Elementor allows custom global font styles and later adjustment from a central location.[^2]
-
-| Global font name | Family | Weight | Typical use |
-|---|---|---:|---|
-| `Display / Civic` | Space Grotesk | 500 | H1, H2, major titles. |
-| `Body / Editorial` | DM Sans | 400–500 | Paragraphs and normal reading text. |
-| `Metadata / Mono` | DM Mono | 400–500 | Dates, labels, buttons, captions, section numbering. |
-
-Use these practical Elementor settings:
-
-| Element | Desktop size | Tablet size | Mobile size | Line height |
-|---|---:|---:|---:|---:|
-| H1 hero | 112–144px | 76–92px | 56–66px | 0.92–0.98em |
-| H1 internal page | 86–118px | 64–76px | 48–58px | 0.94em |
-| H2 section | 56–88px | 44–60px | 34–44px | 0.96–1.04em |
-| H3 tour/session | 30–54px | 28–40px | 26–34px | 1.0–1.08em |
-| Body | 16–18px | 16–17px | 15–16px | 1.45–1.6em |
-| Metadata | 10–12px | 10–11px | 9–10px | 1.2em |
-
-Set all metadata and buttons in uppercase with `0.08em–0.12em` letter spacing. Do not use Inter as a default substitute.
-
-### 3.3 Establish the spacing and geometry rules
-
-Create Elementor global spacing conventions and document them in the team’s handover notes:
-
-| Token | Suggested value | Use |
-|---|---:|---|
-| Horizontal page inset | `clamp(20px, 3vw, 56px)` | Most containers. |
-| Large section padding | `clamp(72px, 10vw, 160px)` | Major editorial sections. |
-| Standard rule | `1px solid #D3CEC3` | Primary form of visual separation. |
-| Small radius | `10px` | Buttons and small metadata fields. |
-| Medium radius | `16px` | Secondary media frame. |
-| Large radius | `22px` | Primary image frame. |
-| Largest radius | `30px` | Hero or major thematic field only. |
-
-Avoid `999px` pills. Avoid blanket `40px+` radius. Avoid large soft shadows. The system should feel like **paper, rails, captions, and architectural planes**, not floating interface cards.
-
-## 4. WordPress page and content architecture
-
-### 4.1 Create the required pages
-
-Create these WordPress pages and assign the Elementor Canvas or Full Width page layout, depending on whether your Theme Builder header/footer are set globally.
-
-| WordPress title | Slug | Navigation label | Primary purpose |
-|---|---|---|---|
-| AAK Annual Convention 2026 | `/` | Home | Narrative landing page. |
-| Programme | `/programme/` | Programme | Day-based programme explorer. |
-| Theme | `/theme/` | Theme | Official theme statement and four conversations. |
-| Speakers | `/speakers/` | Speakers | Confirmed people or honest placeholder. |
-| Experience | `/experience/` | Experience | Convention moments plus technical tours. |
-| Build Tours | `/build-tours/` | Optional secondary link | Documentary field-guide version of tours. |
-| Venue | `/venue/` | Venue | Diani context and approved venue data. |
-| Registration | `/register/` | CTA target | Branded handoff to AAK registration. |
-
-### 4.2 Use structured content where updates are expected
-
-For a one-off launch with a small content team, you can build sections manually in Elementor. For maintainability, however, create the following content types and field groups.
-
-| Content type | Required fields | Elementor output |
+| Role | Font | Use |
 |---|---|---|
-| `programme_session` | Day, start/end time, track, title, detail, speaker, sort order | Tabs/accordion rows. |
-| `technical_tour` | Number, timing label, title, lens, summary, image, image credit, source URL, confirmed status | Experience tour studies and Build Tours field guide. |
-| `speaker` | Name, role, organisation, biography, portrait, session, announcement status | Loop Grid when approved. |
-| `event_setting` or Options page | Registration URL, programme PDF URL, dates, location label, official contact details, live-source enabled flag | Header, CTA, footer, and structured data. |
-| `aak_live_event_cache` transient | Normalised source title, date range, venue, CPD, ticket entries, programme URL, fetched time | Read-only payload for the live Elementor panel. |
+| Display | Space Grotesk | H1/H2/H3. |
+| Body | DM Sans | Paragraphs and ledes. |
+| Metadata | DM Mono | Labels, dates, buttons, captions, prices. |
 
-For `technical_tour`, create exactly three initial entries:
+### 4.2 Use free CSS safely
 
-| Number | Title | Timing label | Field lens |
-|---|---|---|---|
-| 01 | Mwache Multipurpose Dam Project | 18 September / field study | Water infrastructure / catchment resilience |
-| 02 | Ukunda Airport Terminal Expansion | 18 September / field study | Regional mobility / airport infrastructure |
-| 03 | Kisite Mpunguti Marine Park & Wasini Island | 19 September / post-Convention field study | Marine habitats / coastal ecology |
+Elementor Free does not provide the Pro custom-CSS interface. Use one of these free methods instead:
 
-Store the **source URL** and **image credit/source** alongside every third-party image. Do not leave the image provenance only in a caption on a page.
+1. For classic themes, go to **Appearance → Customize → Additional CSS** and paste the central AAK CSS there.
+2. If the current theme does not expose Additional CSS, add the same CSS to a small child theme’s `style.css` with a developer’s help.
+3. Do not paste long CSS blocks into individual Elementor widgets. Add classes in **Advanced → CSS Classes** and keep the CSS centralized.
 
-### 4.3 Add the AAK live event-information bridge
+Use these design rules consistently:
 
-The automatic panel is **not** an Elementor widget that calls the members site directly from the visitor’s browser. The AAK member page currently exposes event information through its own page and an undocumented ticket-data method. The audit found that the browser cannot reliably call that method cross-domain and that it exposes expiry-derived ticket status, not numeric remaining-seat inventory. Therefore, reproduce the current implementation with a small **server-side WordPress plugin** that reads a fixed AAK source, reduces it to approved public fields, caches it for five minutes, and renders a shortcode inside Elementor.[^9]
+* Major sections use `1px` rules and only occasional `22–30px` radius.
+* Buttons use a `10px` radius, not a pill shape.
+* Avoid shadows. Separate fields with spacing, borders, background contrast, rails, captions, and asymmetric image crops.
+* Use cardinal red only for actions, numbers, status outlines, and selected headline emphasis. Do not use it as a generic large background.
+* Use one canonical dark `Civic Ink`; do not introduce a second dark teal/green surface.
 
-> **Public language rule:** Use the source wording such as `29 Days Left`, `Available`, or `Closed`. Never relabel this as `tickets left`, `seats remaining`, or `live inventory` unless the AAK platform formally provides a numeric inventory field.
+## 5. Build the shared header and footer with free tools
 
-Create an AAK-owned plugin folder named `aak-convention-live-event` in `wp-content/plugins/`. The plugin should be version-controlled or stored with the final handover, rather than pasted into the theme’s `functions.php`. This keeps the source integration independent from theme changes and gives AAK a clear owner for future maintenance.
+Elementor Free does not include Theme Builder. Use the free **Header Footer Builder for Elementor** plugin instead.
 
-| Plugin responsibility | Required behavior | Must not do |
-|---|---|---|
-| Source allowlist | Use the fixed approved event URL and fixed AAK ticket method only. | Accept a source URL, event ID, or company ID from a public query parameter. |
-| Retrieval | Use WordPress HTTP functions with a strict timeout and TLS verification. | Fetch the members data in browser JavaScript or through an Elementor HTML widget. |
-| Normalisation | Return only title, date range, venue, CPD points, ticket name, eligibility, KES price, expiry-derived status, source programme URL, and fetched timestamp. | Return source HTML, hidden fields, internal ticket IDs, member data, booking data, or payment data. |
-| Cache | Store normalised data for five minutes; refresh on the next request after expiry. | Request the external members platform on every page view. |
-| Fallback | Render a clear source-unavailable message and the official AAK event-page link. | Leave a blank block or replace factual information with stale, unlabeled guesses. |
-| Public endpoint | If a REST endpoint is used, make it read-only and output only the normalised public payload. | Create a public refresh, update, or payment endpoint. |
+### 5.1 Draft header and footer
 
-#### 4.3.1 Required source contract
+1. Open the Header/Footer Builder plugin’s template screen.
+2. Create `AAK 2026 / Draft Header` and `AAK 2026 / Draft Footer`.
+3. If the plugin can target drafts, set conditions to include only the AAK 2026 draft pages. If it cannot target drafts, do **not** activate global conditions; use the existing public header/footer while reviewing draft page bodies.
+4. Build the header as one horizontal container: structural mark + stacked wordmark on the left; draft navigation centre; Register button on the right.
+5. Build the footer as one dark `Civic Ink` plane with the AAK Convention identity, factual dates/Diani label, Secretariat contacts, and Association links.
 
-Store these values as **plugin constants**, not editable front-end fields:
+The free plugin documents page-specific and global header/footer conditions for Elementor Free and Elementor Pro.[^1] Verify every public live page in a logged-out browser after saving a template condition.
+
+### 5.2 Header construction
+
+| Area | Free Elementor build |
+|---|---|
+| Outer field | One container, 1px `Rule Grey` border, `16px` radius, Mineral Paper background, margin `12px 3vw 0`. |
+| Brand | Image widget for the AAK structural mark and two Heading/Text widgets for `AAK / Annual Convention / 2026`. |
+| Navigation | Header/Footer Builder’s menu widget tied to `AAK 2026 Primary — Draft`. |
+| Register CTA | Standard Elementor Button, Cardinal Red background, linked to `/aak-2026-draft-registration/` while drafting. |
+| Mobile | Use the header builder’s responsive menu control if available. If not, create a second mobile-only container with a simple vertical link list and show/hide by Elementor responsive settings. |
+
+## 6. Build the pages manually in Elementor Free
+
+Do not rely on dynamic Loop Grids or Theme Builder templates. The project has a finite number of key sections and can be faithfully recreated through disciplined manual containers.
+
+### 6.1 Home page structure
+
+Build these fields in this exact order:
+
+| Order | Section | Desktop composition | Mobile behavior |
+|---:|---|---|---|
+| 1 | Hero | Dark two-column container: headline/copy/actions left, image right. | Stack image after text; preserve H1 line breaks. |
+| 2 | Introduction | Three columns: index label, editorial lede, event facts. | Stack label, lede, then facts. |
+| 3 | **Live AAK event panel** | Full-width mineral-paper ticket ledger after introduction. | Stack calendar/venue/CPD; retain price/status hierarchy. |
+| 4 | Theme | Large dark field with official statement, transition rail, four topics. | One-column topic list. |
+| 5 | Programme preview | Copy left, four compact programme rows right. | Stack rows below heading. |
+| 6 | Experience | Dark split field with documentary image and event moments. | Image first or second depending on legibility. |
+| 7 | Venue | Light offset place field and image. | Stack and preserve caption. |
+| 8 | Build Tours preview | Paper field with three numbered factual tour entries. | Single-column list. |
+| 9 | Registration CTA | Stone field with one action to Registration page. | Full-width button. |
+
+### 6.2 Recreate the hero
+
+Use a dark parent container with a maximum `30px` radius and `overflow: hidden`. Add two inner containers: 52% text / 48% image on desktop. Use a normal Image widget, not a background image, so alt text is available and the crop remains controllable. Add a bottom image caption with the date range and `Diani, Kenya`.
+
+The text column should contain the small AAK label, `AAK Annual Convention 2026` H1, the approved theme line, the primary Registration button, and the secondary Programme text link. Use thin dividers only where they terminate at the label, caption, or image edge.
+
+### 6.3 Recreate the dark Theme field
+
+Use one dark container with a label `02 / The Theme`, the heading **From a field of fragments to a shared structure**, the approved theme text, and a simple horizontal transition line:
 
 ```text
-AAK_EVENT_SOURCE_URL = https://members.aak.or.ke/eventdetailv2?eid=baM8JnQ3+AaNamasUK2rTg==
-AAK_TICKET_ENDPOINT  = https://members.aak.or.ke/EventDetail4.aspx/reloadRepeater
-AAK_EVENT_ID         = 70965
-AAK_COMPANY_ID       = 12
-AAK_LIVE_CACHE_TTL   = 5 minutes
+FRAGILITY  —  ADAPTATION  —  RESILIENCE
 ```
 
-The event-detail page is the authoritative public source for the current event title, dates, venue label, CPD points, ticket names, listed prices, eligibility, and source status.[^12] The ticket endpoint is an implementation dependency rather than a published API contract. Treat changes to its response shape, availability, or access policy as an AAK members-platform maintenance issue.
+Below it, create four manually duplicated topic containers. Give each a number, title, and short factual summary. This must be the homepage’s emotional and editorial high point; do not turn it into four rounded cards.
 
-#### 4.3.2 Server-side implementation recipe
+### 6.4 Programme page without premium tabs
 
-Use `wp_safe_remote_get()`/`wp_safe_remote_post()` against the fixed allowlisted AAK URLs. WordPress documents its HTTP functions for remote requests and advises a safe remote request function where URL safety needs attention.[^9] Cache the normalised array with the Transients API. A transient expiration is a maximum lifetime, and the cache may disappear sooner, so the plugin must regenerate data safely when the transient is absent.[^10]
+Elementor Free installations vary in which tab widgets are included. Use the dependable no-cost fallback: a simple day navigation row built from Anchor links and native HTML `<details>` elements in an Elementor HTML widget, or free Accordion widgets if your installed Elementor version includes them.
 
-The implementation should follow this sequence:
+```html
+<details class="aak-programme-item">
+  <summary><span>09:00</span><span>PLENARY</span><strong>Session title</strong></summary>
+  <p>Approved session description and confirmation note.</p>
+</details>
+```
 
-1. Call `get_transient( 'aak_live_event_v1' )`. If it contains a valid array, return it immediately.
-2. Request the fixed event-detail page with a 10–12 second timeout. Parse only the visible event facts: public title, date range, venue label, CPD points, category, event type, and the current programme PDF URL.
-3. POST the fixed JSON request body to the fixed ticket method. Parse the returned public ticket records into `name`, `audience`, `amount`, `currency`, `ticketExpiryDate`, `isActive`, and `ticketTypeActive`.
-4. Derive `status` exactly from the source’s active state and expiry date. If the source is inactive or expired, return `Closed`; otherwise return `N Days Left`. Do not calculate, store, or display a numeric quantity.
-5. Sanitise text using WordPress sanitisation functions, cast amounts to numbers, format the fetched timestamp as UTC internally, and store the resulting array using `set_transient( 'aak_live_event_v1', $data, 5 * MINUTE_IN_SECONDS )`.
-6. If either source request or parse step fails, return a structured error state without overwriting the last valid cache. The rendered panel must show the fallback described in Section 4.3.5.
+Build four day anchors (`#day-16`, `#day-17`, `#day-18`, `#day-19`) above the lists. This approach remains keyboard accessible and does not require Elementor Pro Nested Tabs. Add the official programme PDF link as the canonical full-calendar action.
 
-If the Elementor presentation fetches data asynchronously, register the public read-only route on the `rest_api_init` hook under a versioned namespace such as `aak-convention/v1`. WordPress requires REST routes to be registered on that hook and requires an explicit `permission_callback`; a public read-only route can use `__return_true` only because the payload contains no private data.[^11]
+### 6.5 Speakers page
+
+Until the AAK Secretariat has approved names, roles, bios, and portraits, create a deliberate text-led placeholder. Do not use invented speaker cards. When the roster is approved, manually duplicate a 3-column speaker card container for the actual number of speakers. A premium dynamic Loop Grid is unnecessary for a small one-off convention roster.
+
+### 6.6 Experience and technical tours
+
+The Experience page begins with named Convention moments and then adds the technical-tour chapter:
+
+> **The region becomes part of the curriculum.**
+
+Create three alternating image/text containers manually. Each tour study needs a number, timing label, title, field lens, real sourced image, caption, concise verified description, source link, and a clear note that final access/timing/inclusions come from the Secretariat.
+
+| Number | Title | Field lens |
+|---:|---|---|
+| 01 | Mwache Multipurpose Dam Project | Water infrastructure / catchment resilience |
+| 02 | Ukunda Airport Terminal Expansion | Regional mobility / airport infrastructure |
+| 03 | Kisite Mpunguti Marine Park & Wasini Island | Marine habitats / coastal ecology |
+
+The Build Tours page uses the same three records in a dark field-guide layout. Manual duplication is the lowest-risk free approach. If AAK expects frequent updates, use CPT UI and free ACF fields, but a developer must create a shortcode to display those records because Elementor Free does not offer the Pro dynamic loop output.
+
+### 6.7 Registration page
+
+Build a dark Registration hero, then place the live event panel, then show the five-step journey:
 
 ```text
-GET /wp-json/aak-convention/v1/event
-
-Response fields only:
-name, dateRange, venue, cpdPoints, category, eventType,
-tickets[{name, audience, amount, currency, expiryDate, status, isOpen}],
-programmeUrl, sourceUrl, registrationUrl, fetchedAt
+01 Ticket selection → 02 Registration details → 03 Booking type → 04 Payment → 05 Confirmation
 ```
 
-Do not expose a `refresh`, `force`, `admin`, or ticket-ID parameter in the public route. Create a separate administrator-only `Clear AAK event cache` action in the plugin settings page if the Secretariat needs an immediate refresh after changing the members platform.
+End with the external official AAK event-page button. Use `Open in new window` in the Elementor link settings and label it plainly, for example **Continue to AAK registration**. Do not use an Elementor Form for ticket selection, attendee data, payment, or confirmation.
 
-#### 4.3.3 Elementor implementation: place the panel in the right locations
+## 7. Automatic AAK event-information panel: free implementation
 
-Create a shortcode, for example `[aak_live_event_panel]`, in the custom plugin. The shortcode can either render the complete accessible ticket ledger server-side or output the scoped panel wrapper and retrieve the public REST payload from same-origin JavaScript. The server-rendered approach is preferred because it avoids an empty first paint and is simpler for public event information.
+### 7.1 What the panel may show
 
-In Elementor, insert a **Shortcode** widget at these two locations:
+The panel can automatically display the public AAK source’s event title, dates, venue label, CPD points, category, event type, ticket names, eligibility, KES prices, expiry-derived status, programme PDF link, and official event-page link.[^9]
 
-| Page | Placement | Elementor wrapper class | Why it belongs there |
-|---|---|---|---|
-| Home | Immediately after the Convention introduction/event-metadata field and before the dark Theme field. | `aak-live-event-field` | Gives ticket and current calendar facts early without interrupting the narrative hero. |
-| Registration | Immediately after the dark Registration hero and before the five-step route. | `aak-live-event-field aak-live-event-field--compact` | Lets visitors compare current source details before entering the official booking journey. |
+| Field | Allowed visitor display | Not allowed |
+|---|---|---|
+| Ticket price | `KES 35,000` | A manually typed price beside a `Live` badge. |
+| Status | `29 DAYS LEFT`, `AVAILABLE`, or `CLOSED` based on source flags/expiry. | `12 SEATS LEFT`, `ONLY 3 LEFT`, or any numeric stock claim. |
+| Registration | External official AAK event/booking link. | A fake on-site checkout or payment form. |
+| Calendar | Current date range plus programme PDF action. | Invented sessions or hidden internal schedule data. |
+| Data source | `Live source / AAK event page` plus last checked time. | An unlabelled scrape that looks like AAK-managed inventory. |
 
-The panel should contain the following in this exact hierarchy:
+### 7.2 Why a free custom plugin is required
+
+The AAK member event page’s ticket details are loaded through its own public web method. A browser on the new design cannot reliably request that data across domains, and raw source data must not be exposed unchanged. Use a small **free custom plugin** named `aak-convention-live-event` in `wp-content/plugins/`.
+
+The plugin is code you own; it has no licence cost. If you cannot create PHP files yourself, ask a developer to create this small plugin once. Do not use a generic “web scraper” plugin, and do not paste remote-request PHP into the active theme.
+
+| Plugin responsibility | Exact requirement |
+|---|---|
+| Fixed source | Hardcode the approved AAK event source URL, event ID, company ID, and ticket method in the plugin. Do not let visitors submit a URL. |
+| Retrieval | Use WordPress `wp_safe_remote_get()` and `wp_safe_remote_post()` with a strict 10–12 second timeout. WordPress documents the HTTP API for remote POST requests and advises its safe method where URL safety matters.[^6] |
+| Cache | Use `get_transient()` / `set_transient()` with a five-minute expiry. WordPress documents Transients as temporary cached values that may disappear before their maximum expiry, so the plugin must regenerate safely.[^7] |
+| Filtering | Return only approved public fields. Remove HTML, hidden IDs, member data, payment data, and source response metadata. |
+| Output | Provide one server-rendered shortcode: `[aak_live_event_panel]`. |
+| Fallback | If there is no valid cache and the source fails, render the fallback content and official event-page button. |
+| Refresh | Add an Administrator-only “Clear AAK Event Cache” button in the plugin’s settings page. Do not expose a public refresh URL. |
+
+### 7.3 Required plugin flow
+
+```text
+Visitor opens Home or Registration
+        ↓
+WordPress runs [aak_live_event_panel]
+        ↓
+Valid five-minute transient exists? ── Yes → Render normalized cached panel
+        │
+        No
+        ↓
+Plugin requests the fixed AAK page + fixed ticket method server-side
+        ↓
+Parse only approved public values, calculate expiry-derived status, sanitize
+        ↓
+Store normalized result in transient for 5 minutes
+        ↓
+Render ticket ledger + programme link + official registration link
+```
+
+If you decide to use JavaScript after the first version, create a read-only same-origin REST route such as `/wp-json/aak-convention/v1/event`. WordPress requires REST routes to register on `rest_api_init` and use an explicit permission callback.[^8] This is optional. For the free Elementor path, the server-rendered shortcode is simpler and avoids an empty loading state.
+
+### 7.4 Place the shortcode in Elementor
+
+On **Home**, add a full-width container immediately after the Introduction section. Drag in Elementor’s **Shortcode** widget and enter:
+
+```text
+[aak_live_event_panel]
+```
+
+Give its parent container the class `aak-live-event-field`. Repeat this on **Registration** immediately after the dark hero and before the five-step route. Use the class `aak-live-event-field aak-live-event-field--compact` on the Registration version.
+
+The shortcode should render this hierarchy:
 
 ```text
 07 / CURRENT EVENT INFORMATION
 LIVE SOURCE / AAK EVENT PAGE
 What is open now.
-Source-status explanation
 
 Calendar | Venue | Learning / CPD points
 
 Ticket type | Price | Source status
-Ticket name + eligibility | KES amount | N DAYS LEFT or CLOSED
+Member ticket / MEMBERS ONLY | KES amount | N DAYS LEFT
 
-Last checked [date/time] | Open current programme | Continue to AAK registration
+Last checked [time] | Open current programme | Continue to AAK registration
 ```
 
-Use the same mineral-paper field, thin rule grid, mono metadata, cardinal status outline, and non-pill buttons described elsewhere in this guide. Do not render it as a generic pricing-card grid. The ticket ledger is a factual publication field.
+Make this a paper-and-rule ticket ledger, not a generic pricing-card grid. The red status uses a 1px outline; the price uses DM Mono; the ticket name and eligibility use a publication-style text hierarchy.
 
-#### 4.3.4 Example status and pricing rules
+### 7.5 Source-unavailable fallback
 
-| Source condition | Visitor-facing text | Styling |
-|---|---|---|
-| Active ticket with future expiry | `29 DAYS LEFT` or source-equivalent day count | Cardinal red 1px outline; no filled alert background. |
-| Active ticket without a parseable expiry | `AVAILABLE` | Cardinal red 1px outline. |
-| Inactive ticket or passed expiry | `CLOSED` | Muted grey 1px outline. |
-| Currency `KES`, amount `35000` | `KES 35,000` | DM Mono, aligned numeric column. |
-| Member flag = member-only | `MEMBERS ONLY` | Small uppercase metadata below ticket name. |
-| Member flag = member/non-member | `MEMBERS AND NON-MEMBERS` | Small uppercase metadata below ticket name. |
-
-The panel is allowed to show a ticket price that has changed on the source. It must never show a manually hardcoded price alongside a `Live source` label.
-
-#### 4.3.5 Failure, stale-data, and source-change behavior
-
-If a source request fails and no valid cache is available, replace the ledger with this compact fallback:
+The plugin must render this instead of a blank panel if no valid source/cache is available:
 
 > **Current AAK information**  
 > **View the latest ticket and event details.**  
 > The official AAK event page remains the current source while this page reconnects.  
-> `[Open AAK event page ↗]`
+> **Open AAK event page ↗**
 
-If a valid cached payload exists but the fresh request fails, show the cached ledger with `Last checked [timestamp]` and a discreet note that the official AAK event page remains the latest booking source. Do not hide the age of cached data. In all failure states, keep the external AAK event-page button visible and working.
+Test this before launch by temporarily disabling the custom plugin on a private/draft preview or using an Administrator-only local test switch. Confirm that the button works on desktop and mobile and that the normal ledger returns after the source is restored.
 
-Test this state before launch by temporarily blocking outbound access in a local/staging test, or by using an administrator-only test switch that never exists for public visitors. Check desktop and mobile, keyboard focus, the fallback button, and the restoration of normal data after the source returns.
+## 8. Free CSS and motion workflow
 
-## 5. Build the Theme Builder templates
-
-Elementor Theme Builder can create site-part templates such as headers and footers and apply them through display conditions.[^1] Use it rather than recreating the same shell on every page.
-
-### 5.1 Header template
-
-During the draft phase, go to **Templates → Theme Builder → Header → Add New**, create `AAK 2026 / Draft Header`, and leave it with **no `Entire Site` condition**. Use the safe-template strategy in Section 2.2. Only in the approved launch window should the final `AAK 2026 / Global Header` receive an `Entire Site` display condition.
-
-Create one main container with this structure:
-
-1. Outer container: max width `none`, page margin `12px 3vw 0`, background `Near White`, 1px `Rule Grey` border, `16px` radius, sticky positioning.
-2. Inner container: horizontal flex, justified between, minimum height `64–72px`.
-3. Left: AAK structural mark plus a stacked wordmark reading `AAK / ANNUAL / CONVENTION / 2026`.
-4. Centre: WordPress Menu widget with Programme, Theme, Speakers, Experience, Venue.
-5. Right: Cardinal red **Register** button linking directly to the official AAK registration page in a new tab.
-6. Mobile: retain the brand lock-up, hide the desktop menu, and use an Elementor popup or mobile menu button. Include Registration in the mobile navigation.
-
-Give the header container class `aak-site-header`. Give the register button class `aak-register-button`.
-
-### 5.2 Footer template
-
-Create `AAK 2026 / Draft Footer` as a saved template or draft-only Theme Builder footer. Do not apply it to the entire live site during construction. At launch, promote it to `AAK 2026 / Global Footer` and set the final display condition after you remove/disable the old footer condition.
-
-The footer should include the following columns: stacked AAK Convention identity; Convention dates and Diani label; Secretariat email/phone; Association links. Keep the footer factual. It should not contain invented testimonials, social proof, or arbitrary calls to action.
-
-## 6. Build the homepage in Elementor
-
-Create the home page in this order. Use Elementor Containers, not legacy Sections/Inner Sections, so each major field has an explicit flex or grid layout.
-
-### 6.1 Hero
-
-Use a two-column parent container on desktop and one-column stack on tablet/mobile.
-
-| Element | Elementor build instruction |
-|---|---|
-| Outer field | Dark background, 1px dark border, maximum `30px` radius, `overflow: hidden`, class `aak-hero`. |
-| Left column | Kicker, H1, theme statement, primary Register button, secondary Programme text link. |
-| Right column | Image widget with the approved coastal architecture image, `object-fit: cover`, `22px` radius. |
-| Metadata strip | Absolutely position a small date/location caption at the image bottom. |
-| Structural lines | Use two or three absolutely positioned Divider widgets; each must terminate at a caption, section number, or image edge. |
-
-Do not use a background image behind hero text. Place the image in its own container so text remains readable and content remains accessible.
-
-### 6.2 Convention introduction
-
-Use a three-column grid on desktop: `section label / editorial lede / event metadata`. On mobile, stack label, lede, then metadata. The metadata can be three small columns: dates, place, CPD points. Use a rule and background contrast; no shadow.
-
-### 6.2a Live event-information field
-
-Immediately after the introduction, add the `[aak_live_event_panel]` Shortcode widget inside an Elementor container with the `aak-live-event-field` class. Do not manually rebuild the ticket rows in Elementor; the plugin-controlled output prevents a visual `Live source` claim from drifting away from the actual source values. The panel must show its own last-checked timestamp, current programme action, and official AAK registration action.
-
-### 6.3 Theme: the emotional high point
-
-This must be the strongest editorial section on the homepage.
-
-1. Add a dark full-width container with `Civic Ink` background and light text.
-2. Add the section label `02 / The Theme` using cardinal red for the number.
-3. Set the major heading as: **From a field of fragments to a shared structure.**
-4. Add the official theme paragraph without rewriting it into generic marketing language.
-5. Add a horizontal transition rail: `Fragility — Adaptation — Resilience`.
-6. Add the four thematic conversations in a 4-column desktop grid, 2-column tablet grid, and single column mobile list.
-7. Use thin connecting lines that clearly terminate at the section label, transition rail, or grid edge.
-
-The dark theme field may use the largest radius in the system. Do not make every other section look like it.
-
-### 6.4 Programme preview
-
-Build a two-column field: headline and explanatory text on the left; a compact programme accordion on the right. The full Programme page holds the complete schedule.
-
-For the preview, use a static four-row list or a filtered Loop Grid. Each row should show `time / track / title / chevron`. The click state reveals the additional detail. Do not fake speaker details where they have not been confirmed.
-
-### 6.5 Experience, venue, tours, and registration
-
-Build the remaining homepage sections as distinct planes rather than uniform cards:
-
-* **Experience:** dark split field with a real editorial image on one side and the Convention experiences on the other.
-* **Venue:** light offset field with Diani/place copy and an approved image. Do not name a property until the Secretariat confirms one canonical venue name.
-* **Build Tours preview:** use a light paper field, not a large red promotional block. Show the three tour titles, numbered metadata, short factual summaries, and a link to `/build-tours/`.
-* **Registration CTA:** light stone field with one clear action linking to `/register/`.
-
-## 7. Build the internal pages
-
-### 7.1 Programme page
-
-Use Elementor Nested Tabs for the four days: `16`, `17`, `18`, and `19 September`. Inside each tab, use Accordion or Toggle widgets for sessions.
-
-**Row anatomy:**
-
-```text
-TIME     TRACK / CATEGORY      SESSION TITLE                         CHEVRON
-detail, speaker, or Secretariat confirmation note on expansion
-```
-
-Make one accordion item open at a time, give the focus state a visible `1px` outline, and ensure the day tabs work by keyboard. Add the official programme PDF as a supporting link, not the only source of schedule information.
-
-### 7.2 Theme page
-
-Start with a light page hero, then move directly into the large dark official-theme panel. Use the `technical_tour`-style editorial rhythm: number, statement, body, and a field of four conversations. This prevents the official theme from feeling like generic light-page body copy.
-
-### 7.3 Speakers page
-
-Until speakers are approved, create a deliberate placeholder that says the roster is being confirmed with the Secretariat. Do not place dummy portraits or fabricated titles.
-
-When data is ready, create a Loop Item template with portrait, name, role, organisation, session, and a short biography link. Configure the Loop Grid to show only `speaker` entries where `announcement status = approved`.
-
-### 7.4 Experience page and technical tours
-
-The Experience page should start with named Convention moments, then add a secondary chapter titled:
-
-> **The region becomes part of the curriculum.**
-
-Use an alternating image/text list for the three `technical_tour` records. For every tour study, include:
-
-| Field | Purpose |
-|---|---|
-| Number and timing label | Gives the field guide an ordered, programme-aware structure. |
-| Published location image | Real, documented image—not an invented illustration. |
-| Alt text | Describes the image’s visible location/works. |
-| Tour title | Uses the official programme name. |
-| Field lens | Explains why the location matters: water, mobility, or marine ecology. |
-| Summary | Concise and factual; no unconfirmed logistics. |
-| Source link | Opens the published project or park context in a new tab. |
-| Programme note | States that access conditions, timing, inclusions, and participant arrangements remain subject to Secretariat confirmation. |
-
-For the three source records currently used, maintain these references in WordPress notes or custom fields:
-
-| Tour | Published context |
-|---|---|
-| Mwache Multipurpose Dam | Coast Development Authority project page. |
-| Ukunda Airport works | Cementers project documentation for Kenya Airports Authority work. |
-| Kisite Mpunguti Marine Park | Kenya Wildlife Service park page. |
-
-### 7.5 Build Tours page
-
-Build this as a dark **field guide**, not a bare dark list. Use the same tour content fields and images as Experience, but in a denser desktop row layout:
-
-```text
-NUMBER + TITLE | DOCUMENTARY IMAGE + CAPTION | CONTEXT + SOURCE LINK | PLAN REGISTRATION
-```
-
-If you use Elementor Loop Grid, create a dedicated Loop Item named `Technical Tour / Field Guide`. Otherwise, save one complete tour row as a reusable Elementor template and duplicate it three times.
-
-### 7.6 Venue page
-
-Keep the public location label at `Diani, Kenya` until AAK reconciles the conflicting property names upstream. Add a calm note directing visitors to the official registration information for the latest accommodation/event source; do not select a property name by guesswork.
-
-### 7.7 Registration page
-
-This is a branded, transparent handoff page. Construct it as follows:
-
-1. Dark hero with `09 / Registration`, title, short statement, and a cardinal-red or near-white external button.
-2. A vertical five-step route: `Ticket selection → Registration details → Booking type → Payment → Confirmation`.
-3. Editorial copy explaining that the official AAK registration journey opens in a new tab and shows the current ticket availability and available payment options.
-4. Add the `[aak_live_event_panel]` shortcode after the hero, then show the five-step route below it.
-5. Include the current programme action and one clear external button to the known official registration URL.
-
-Use `target="_blank"` and `rel="noopener noreferrer"` if you insert a custom HTML link. Elementor’s Link settings also allow opening a URL in a new window.
-
-Do **not** use an Elementor Form to collect payment details. Until AAK provides an approved integration, that would create a misleading and potentially unsafe booking experience. The live panel shows source-derived ticket details only; it does not create a booking, reserve stock, or collect payment data.
-
-## 8. Add the reusable CSS layer
-
-Add the following CSS in **Elementor Site Settings → Custom CSS** when available, or in **Appearance → Customize → Additional CSS**. Give the relevant Elementor containers the classes named in the comments.
+Put central CSS in **Appearance → Customize → Additional CSS** or in a child theme. Use classes from Elementor Advanced settings. Do not rely on Elementor Pro Custom CSS.
 
 ```css
 :root {
   --aak-red: #B72028;
   --aak-paper: #F3F0E8;
-  --aak-white: #FAF9F5;
-  --aak-stone: #E9E5DB;
   --aak-ink: #171714;
   --aak-rule: #D3CEC3;
   --aak-muted: #68655E;
-  --aak-radius-sm: 10px;
-  --aak-radius-md: 16px;
-  --aak-radius-lg: 22px;
-  --aak-radius-xl: 30px;
-  --aak-ease: cubic-bezier(.23, 1, .32, 1);
 }
 
-/* Apply to major fields only, not every inner container. */
-.aak-plane {
-  background: var(--aak-white);
+.aak-plane,
+.aak-live-event-field {
+  background: #FAF9F5;
   border: 1px solid var(--aak-rule);
-  border-radius: var(--aak-radius-xl);
-  position: relative;
+  border-radius: 30px;
   overflow: hidden;
 }
 
-.aak-plane--dark {
-  background: var(--aak-ink);
-  border-color: #3a3934;
-  color: var(--aak-paper);
-}
-
-/* Use on label widgets: 02 / THE THEME. */
-.aak-index-label {
-  align-items: center;
-  display: flex;
-  gap: 12px;
+.aak-status--open {
+  border: 1px solid var(--aak-red);
+  color: var(--aak-red);
   font-family: "DM Mono", monospace;
   font-size: 11px;
-  letter-spacing: .12em;
+  letter-spacing: .08em;
+  padding: 6px 9px;
   text-transform: uppercase;
 }
 
-.aak-index-label::after {
-  background: var(--aak-red);
-  content: "";
-  display: block;
-  height: 1px;
-  opacity: .7;
-  width: clamp(36px, 5vw, 80px);
-}
-
-/* Use on the technical-tour image container. */
-.aak-tour-image img {
-  aspect-ratio: 16 / 10;
-  border: 1px solid var(--aak-rule);
-  border-radius: var(--aak-radius-lg);
-  display: block;
-  height: auto;
-  object-fit: cover;
-  transition: transform .55s var(--aak-ease), filter .55s var(--aak-ease);
-  width: 100%;
-}
-
-.aak-tour-row:hover .aak-tour-image img {
-  filter: saturate(1);
-  transform: scale(1.015);
-}
-
-/* Tactile CTA, not a pill. */
-.aak-register-button .elementor-button,
-.aak-cta .elementor-button {
+.aak-register-button .elementor-button {
   background: var(--aak-red);
   border: 1px solid var(--aak-red);
-  border-radius: var(--aak-radius-sm);
-  box-shadow: none;
+  border-radius: 10px;
   font-family: "DM Mono", monospace;
-  font-size: 11px;
-  letter-spacing: .09em;
+  letter-spacing: .08em;
   text-transform: uppercase;
-  transition: background .2s var(--aak-ease), transform .16s var(--aak-ease);
 }
 
-.aak-register-button .elementor-button:hover,
-.aak-cta .elementor-button:hover {
-  background: var(--aak-ink);
-  border-color: var(--aak-ink);
-}
-
-.aak-register-button .elementor-button:active,
-.aak-cta .elementor-button:active { transform: scale(.97); }
-
-/* Respect accessibility preferences. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: .001ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
     transition-duration: .001ms !important;
   }
 }
 ```
 
-If styling a specific Elementor element, add the relevant class under **Advanced → CSS Classes**. Do not paste a large CSS block into each widget’s custom CSS field; centralisation makes future maintenance safer.
+Use Elementor Free entrance effects only on a few major fields. For the optional scroll reveal, use a free Code Snippets plugin or a child-theme script to add an `is-visible` class when `.aak-reveal` enters the viewport. Do not use paid animation packs. Motion must use opacity/transform, respect `prefers-reduced-motion`, and stay below roughly 700ms.
 
-## 9. Add purposeful motion, not decorative animation
+## 9. Responsive and accessibility checks
 
-The current site’s motion is restrained: reading progress, reveal-on-entry, line alignment, compact button response, programme disclosure, and subtle image depth. Keep the same restraint in Elementor.
+Elementor supports device-specific editing controls; use desktop, tablet, and mobile views for each container.[^5] Do not merely shrink desktop layouts.
 
-### 9.1 Native Elementor motion
-
-Use Elementor entrance animations only for primary fields. Configure `Fade In Up` or a modest `Fade In` with a duration around `400–650ms`. Do not animate every heading, divider, card, or icon. On mobile, reduce animation use further.
-
-### 9.2 Optional custom reveal script
-
-If Elementor Pro Custom Code is available, add the following at `</body>` and give major fields the class `aak-reveal`. If no Custom Code facility is available, use a trusted snippets management method rather than editing the parent theme.
-
-```html
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  var items = document.querySelectorAll('.aak-reveal');
-  var observer = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
-  items.forEach(function (item) { observer.observe(item); });
-});
-</script>
-```
-
-Add this companion CSS:
-
-```css
-.aak-reveal { opacity: 0; transform: translateY(24px); transition: opacity .65s cubic-bezier(.23,1,.32,1), transform .65s cubic-bezier(.23,1,.32,1); }
-.aak-reveal.is-visible { opacity: 1; transform: none; }
-@media (prefers-reduced-motion: reduce) { .aak-reveal { opacity: 1; transform: none; transition: none; } }
-```
-
-Never animate layout properties such as `height`, `top`, `left`, margin, or width for this effect. Prefer `opacity` and `transform` for lower-impact motion.
-
-## 10. Responsive implementation procedure
-
-Elementor provides responsive editing controls and default desktop/tablet/mobile breakpoints; its documentation states that responsive settings can be changed per device and that default breakpoints are desktop above 1024px, tablet from 1024px to 767px, and mobile below 767px.[^4]
-
-For every major page, do this procedure in order:
-
-1. Design the **desktop** container structure first.
-2. Switch to **tablet** view in Elementor and collapse two-column structures before text becomes cramped.
-3. Switch to **mobile** view and recompose; do not merely shrink desktop typography.
-4. Reduce H1 size, line length, metadata columns, and decorative rules at mobile width.
-5. Stack image/text tour studies. Alternate desktop order may become image-first on every mobile item.
-6. Keep programme day tabs horizontally scrollable if necessary; never allow them to wrap into unreadable mini buttons.
-7. Verify the header menu, Register button, Experience technical tours, and registration handoff on a real phone.
-
-Use these mobile acceptance criteria:
-
-| Area | Mobile acceptance test |
+| Area | Free-tier acceptance test |
 |---|---|
-| Header | Brand lock-up remains legible; menu is reachable; Register is not lost. |
-| Hero | H1 has no accidental clipping or horizontal scroll. |
-| Programme | Tabs and accordions remain keyboard/touch usable. |
-| Technical tours | Every image loads, has correct aspect ratio, and source/context link is reachable. |
-| Registration | New-tab handoff is plainly explained. |
-| Motion | Reduced-motion setting removes non-essential movement. |
+| Header | The Header/Footer Builder mobile header remains usable; Register stays visible. |
+| Hero | H1 does not clip; image is stacked or cropped intentionally. |
+| Programme | `<details>` or Accordion controls work by keyboard and touch. |
+| Live panel | Price and status remain readable; no horizontal scroll; fallback link remains visible. |
+| Technical tours | Each image has factual alt text and a working source link. |
+| Registration | External AAK handoff opens clearly in a new tab. |
+| Motion | Reduced-motion preferences remove non-essential movement. |
 
-## 11. Accessibility, SEO, and performance checklist
+Use exactly one H1 per page, clear H2/H3 hierarchy, descriptive image alt text, visible keyboard focus, and sufficient contrast. Use empty alt text only for decorative structural marks.
 
-### 11.1 Accessibility
+## 10. Controlled launch without premium features
 
-* Use exactly one H1 per page. Use H2 for major sections and H3 for tour/session titles.
-* Use landmark-like page structure: one header, one main content region, one footer.
-* Use descriptive alt text for substantive location images. Use `alt=""` only for the purely decorative structural-span mark.
-* Maintain visible focus outlines on links, accordions, tabs, buttons, and external registration CTAs.
-* Ensure all background/text combinations meet accessible contrast; do not place unprotected text over unpredictable photographs.
-* Do not rely on red alone to convey active programme tabs or confirmation states.
+### 10.1 Before the launch window
 
-### 11.2 SEO and structured data
+1. Test every draft page while logged out and in an incognito browser.
+2. Check the AAK source URL, registration link, programme PDF, Secretariat contacts, final dates, and venue language.
+3. Confirm the free Header/Footer Builder templates are either draft-page-only or unassigned globally.
+4. Confirm the live-event plugin is active, has a valid five-minute cached payload, and has a working fallback.
+5. Take a new full backup and preserve the legacy menu/header/footer record.
 
-Set the homepage title to:
+### 10.2 Launch order
 
-```text
-AAK Annual Convention 2026 | Architectural Association of Kenya
-```
+| Order | Action | Immediate check |
+|---:|---|---|
+| 1 | Publish approved new pages and change temporary slugs to final slugs. Rename old conflicting pages to `Legacy — [Name] — YYYY-MM-DD` first. | No slug collision. |
+| 2 | Assign `AAK 2026 Primary — Draft` as the active menu and rename it `AAK 2026 Primary`. Preserve the old menu as `Legacy Primary`. | Test links while logged out. |
+| 3 | In Header Footer Builder, make the final AAK header/footer global and disable the old global header/footer templates. | No duplicate header/footer appears. |
+| 4 | Go to **Settings → Reading**, choose the new AAK 2026 Home as the static homepage, then save. | Root domain shows the new Home page. |
+| 5 | Clear host/CDN/page cache and the AAK event transient once. | Live panel loads or shows the transparent fallback. |
+| 6 | Check Home, Programme, Experience, Registration, and one legacy route on desktop and mobile. | No 404, missing CSS, or misleading ticket statement. |
 
-Add the approved meta description, social image, canonical URL, and `Event` structured data. The JSON-LD should use the confirmed dates, final location, public Convention name, official registration URL, and the appropriate event status. Do not publish a venue property name until AAK has reconciled its official source data.
+### 10.3 Rollback order
 
-### 11.3 Image and performance rules
+If a critical issue appears, restore the public experience first:
 
-1. Upload authorised image files at roughly twice their rendered dimensions, then generate WebP versions through WordPress or your optimisation layer.
-2. Use an image-specific alt text, a meaningful media title, and a custom field for credit/source.
-3. Lazy-load below-the-fold images, except the principal hero image and any first-view technical-tour image that would otherwise appear blank.
-4. Do not add a visual loading screen. Use Elementor’s normal rendering or a quiet skeleton only when a genuinely asynchronous dynamic section requires it.
-5. Minimise third-party scripts, font variants, popup plugins, and motion plugins. The site’s editorial character should come from layout and imagery, not from heavy effects.
+1. Re-select the previous Homepage in **Settings → Reading**.
+2. Reassign `Primary Navigation — Live`.
+3. Disable the new global Header/Footer Builder templates and restore the legacy templates.
+4. Clear cache and test logged out.
+5. If the problem remains, restore the timestamped host backup.
 
-### 11.4 Live event-information QA
+Do not delete the new pages after a rollback. Set them back to Draft and investigate without affecting visitors.
 
-| Check | Pass condition |
-|---|---|
-| Public source values | Date range, venue label, CPD, ticket names, KES amounts, eligibility, and status match the official AAK event page at the time tested. |
-| Source-status wording | Open/closed labels are derived from active/expiry status and do not claim seats, capacity, or numeric inventory. |
-| Cache | First live retrieval is cached for five minutes; repeated visitor requests do not re-query the members platform during the cache window. |
-| Error handling | No JavaScript error or blank field occurs if the members source is unavailable. |
-| Fallback | The fallback message and official AAK event-page button render on desktop and mobile. |
-| Security | No hidden ticket fields, member data, booking data, payment data, or arbitrary remote URL is exposed. |
-| Operations | An AAK administrator can clear the event cache after a confirmed source update. |
+## 11. Free-tier limitations you should expect
 
-## 12. Registration and platform dependency plan
-
-The WordPress site can create a **visually continuous transition**, but it cannot fix the separate `members.aak.or.ke` experience unless its owner updates that platform or provides an approved API/integration.
-
-| Dependency | Required owner action | WordPress action now |
+| Free-tier limitation | Practical consequence | Free workaround |
 |---|---|---|
-| Nairobi Biennale banner on registration site | Remove or replace it in the member platform’s event configuration | Keep the public site Biennale-free and do not repeat the asset. |
-| Different registration visual system | Reskin members-platform event and booking templates | Preserve clear AAK-branded handoff page. |
-| Public ticket catalogue/status | The members platform maintains the source page and undocumented ticket method, or provides a documented replacement API | Use the server-side live bridge, cache for five minutes, label status as expiry-derived, and retain the AAK source link. |
-| Real ticket inventory/payment data | Provide a documented booking/payment API with numeric inventory and approved payment flow | Do not simulate inventory, forms, reservation, or payment. |
-| Venue/date inconsistency | Secretariat confirms one canonical venue name and date range | Use Diani, Kenya and the approved date label until confirmation. |
+| No Elementor Pro Theme Builder | Header/footer needs a separate free plugin. | Use Header Footer Builder for Elementor. |
+| No Loop Grid/Dynamic Tags | Content will not auto-generate Elementor cards from fields. | Manually duplicate the finite tour/speaker/programme sections, or create a shortcode with developer help. |
+| No Pro Forms/checkout | No native ticket purchase, payment, or confirmation flow. | Use the official AAK external registration journey. |
+| No Pro Custom Code | No dashboard area for global JavaScript. | Use a child theme or free Code Snippets. |
+| No ACF Pro repeater/options pages | Complex repeatable field groups need code or manual editing. | Keep records separate as normal posts or manually manage the three tours. |
+| Undocumented AAK ticket method | The automatic source may change without notice. | Keep the fallback active and ask AAK for a documented API. |
 
-When AAK later provides a secure integration, add the true ticket-to-confirmation journey as a separate scoped project. It will need authentication, payment security, data protection review, error states, confirmation emails, and an authoritative registration data source. It should not be improvised inside a visual page builder. Until then, the automated panel is an informed public-event display—not a checkout or inventory system.
-
-## 13. Controlled same-domain launch and rollback procedure
-
-This section is the operational answer to “how do I switch from draft pages to the public site without another domain?” Plan a low-traffic launch window and identify one AAK decision-maker who can approve content, one person with WordPress admin access, and one person with host-backup/rollback access.
-
-### 13.1 Pre-launch day checklist
-
-Complete these actions before the launch window—not during it.
-
-1. Check every draft page in an incognito browser, desktop/mobile preview, and at least one real mobile phone.
-2. Confirm the external registration link, programme PDF link, email, phone number, dates, and final venue wording with the Secretariat.
-3. Check the `AAK 2026 Primary — Draft` menu page by page.
-4. Check the new header/footer template conditions and make sure they are either unassigned or restricted solely to draft pages.
-5. Create a fresh full host backup and export the live menu/customizer/settings record again.
-6. Prepare a short internal launch log with exact time, people present, new home page title, old home page title, new menu name, old menu name, new header/footer template names, and rollback sequence.
-7. Clear no caches yet. Caches should be cleared after the switch, not before it.
-8. Confirm the `aak-convention-live-event` plugin is active, the source constants are correct, and the pre-launch cache contains a valid normalised payload. Do not rely on the first public visitor to discover an integration failure.
-
-### 13.2 Launch steps: perform in this order
-
-| Order | Exact action | Verify immediately |
-|---:|---|---|
-| 1 | Publish all approved `AAK 2026 — Draft — [Page]` pages except the home page last if you want to reduce partial exposure. | Open each temporary draft slug while logged out. |
-| 2 | Rename each published page to its final public title and change its slug to the final slug. If an existing page uses that slug, first rename the old page to `Legacy — [Name] — 2026-09-XX` and give it a legacy slug. | WordPress confirms that each new slug is unique. |
-| 3 | In **Appearance → Menus**, assign `AAK 2026 Primary — Draft` to the active primary-menu location and rename it `AAK 2026 Primary`. Preserve the old menu as `Legacy Primary — YYYY-MM-DD`. | Test every menu link in an incognito browser. |
-| 4 | In Elementor Theme Builder, change the new header/footer conditions to `Include → Entire Site`. Immediately edit the old header/footer conditions so they are no longer active for the entire site; keep the old templates as drafts/archives. | Open Home, Programme, Experience, Registration, and a legacy/non-Convention page. No duplicate header/footer appears. |
-| 5 | Go to **Settings → Reading**. Select `A static page`, then choose the new AAK 2026 home page as `Home page`; save changes. WordPress uses this setting to determine the site front page.[^6] | Open the root domain in an incognito browser. |
-| 6 | Only now convert the old home page to Draft or leave it published but unlinked under a legacy slug, according to AAK’s archive policy. | Root domain still resolves to the new home page. |
-| 7 | If a theme change was approved, activate the prepared theme now and recheck all public routes. If no theme change is required, leave the current theme active. | Header, footer, forms, menus, and legacy pages render correctly. |
-| 8 | Clear the host/CDN/page cache, regenerate Elementor CSS/data if required, clear the live-event transient once, and test again while logged out. | No old cached header, missing CSS, 404, blank live panel, or misleading ticket-status label remains. |
-
-### 13.3 Five-minute rollback plan
-
-If a critical issue appears, do not debug it on the public home page while visitors are affected. Restore the known public experience first.
-
-1. Go to **Settings → Reading** and reselect the previous live home page.
-2. Reassign the `Primary Navigation — Live` menu to the active primary-menu location.
-3. In Elementor Theme Builder, remove the `Entire Site` condition from the new header/footer and restore the old templates’ previous conditions.
-4. If a theme switch occurred, reactivate the recorded previous theme.
-5. Clear cache again and test the root domain while logged out.
-6. If the site remains broken, ask the host to restore the timestamped host-level backup from immediately before launch.
-
-Do not delete the new pages after a rollback. Change their status to Draft and investigate them later. Keeping the work intact is why this workflow uses duplicate draft pages rather than destructive in-place editing.
-
-## 14. Recommended build order
-
-Follow this order. It reduces rework and keeps the site publishable during content collection.
-
-| Step | Deliverable | Completion test |
-|---:|---|---|
-| 1 | Backup, restoration record, draft naming plan | Live site remains unchanged; rollback owner is known. |
-| 2 | Elementor/Pro and optional content plugins | Plugins active; no live template or theme switch has occurred. |
-| 3 | Draft global AAK tokens, spacing, scoped CSS | Sample draft page matches design system without changing a live page. |
-| 4 | Draft header/footer and draft menu | Preview is complete without an `Entire Site` condition. |
-| 5 | Draft Home, Theme, Programme, Venue | Core narrative and factual event data are in place. |
-| 6 | Draft Experience and technical tours | Three cited location studies load with correct images. |
-| 7 | Draft Build Tours and Registration | Field-guide consistency and honest handoff are in place. |
-| 8 | Live event-source bridge and source-labelled ledger | Current AAK facts, ticket prices, source status, fallback, and external handoff are verified. |
-| 9 | Draft speakers placeholder or approved roster | No fabricated people data. |
-| 10 | Mobile, keyboard, reduced-motion, SEO, performance QA | All acceptance tests pass. |
-| 11 | Controlled same-domain changeover | New front page, menu, templates, cache, and live source panel work; rollback is tested. |
-
-## 15. Final pre-launch checklist
-
-Before publishing, check each item manually.
+## 12. Final pre-launch checklist
 
 | Check | Pass condition |
 |---|---|
-| Biennale removal | The WordPress public site contains no Biennale text, logos, or assets. |
-| Event facts | Date, venue, CPD points, contact, and registration URL are confirmed by AAK. |
-| Theme | Official theme copy appears in the dark editorial high-point section. |
-| Technical tours | Images have permission/source records and source links work. |
-| Registration | Every Register CTA opens the correct official system; no fake checkout exists. |
-| Live event panel | Source facts and ticket-status language match the AAK event page; fallback action works; no numeric inventory is claimed. |
-| Mobile | Tested on at least one iOS and one Android viewport/device. |
-| Accessibility | Keyboard navigation, focus state, heading hierarchy, alt text, and reduced motion checked. |
-| SEO | Title, description, Open Graph, canonical, sitemap, and Event JSON-LD validated. |
-| Performance | Images optimised, unnecessary plugins removed, no visual loading screen. |
-| Backup | Full backup and export of Elementor templates taken before launch. |
+| No paid dependency | The site works without Elementor Pro, ACF Pro, paid theme, or paid addon. |
+| Public site safety | Existing pages remain unchanged until the controlled launch window. |
+| Convention identity | No Biennale text, logos, or imagery appear on the public Convention pages. |
+| Event facts | Date, venue, CPD points, contacts, and registration link are confirmed by AAK. |
+| Live event panel | Source facts/status match the AAK page; no numeric inventory is claimed; fallback works. |
+| Technical tours | Real images have permission/source records and working source links. |
+| Registration | Every CTA links to the official AAK path; no fake checkout exists. |
+| Mobile and accessibility | Keyboard, focus, mobile width, heading structure, alt text, and reduced motion are tested. |
+| Backup | A current full host backup and rollback owner are confirmed. |
 
 ## References
 
-[^1]: [Elementor, “What is the Theme Builder?”](https://elementor.com/help/the-elementor-theme-builder/)
-[^2]: [Elementor, “View and edit global fonts”](https://elementor.com/help/view-and-edit-global-fonts/)
-[^3]: [Elementor, “View and edit global colors”](https://elementor.com/help/view-and-edit-global-colors/)
-[^4]: [Elementor, “Responsive editing for mobile and tablets”](https://elementor.com/help/mobile-editing/)
-[^5]: [WordPress, “How to use the preview function”](https://wordpress.org/documentation/article/how-to-use-the-preview-function/)
-[^6]: [WordPress, “Settings Reading Screen”](https://wordpress.org/documentation/article/settings-reading-screen/)
-[^7]: [WordPress, “Manage Plugins”](https://wordpress.org/documentation/article/manage-plugins/)
-[^8]: [WordPress.org, “Elementor Website Builder”](https://wordpress.org/plugins/elementor/)
-[^9]: [WordPress Developer Resources, “wp_remote_post()”](https://developer.wordpress.org/reference/functions/wp_remote_post/)
-[^10]: [WordPress Developer Resources, “Transients API”](https://developer.wordpress.org/apis/transients/)
-[^11]: [WordPress Developer Resources, “register_rest_route()”](https://developer.wordpress.org/reference/functions/register_rest_route/)
-[^12]: [Architectural Association of Kenya, “AAK Annual Convention 2026 Event Registration”](https://members.aak.or.ke/eventdetailv2?eid=baM8JnQ3%2BAaNamasUK2rTg%3D%3D)
+[^1]: [Header Footer Builder for Elementor, WordPress.org](https://wordpress.org/plugins/header-footer-builder-for-elementor/)
+[^2]: [Custom Post Type UI, WordPress.org](https://wordpress.org/plugins/custom-post-type-ui/)
+[^3]: [Advanced Custom Fields, WordPress.org](https://wordpress.org/plugins/advanced-custom-fields/)
+[^4]: [WordPress, “How to use the preview function”](https://wordpress.org/documentation/article/how-to-use-the-preview-function/)
+[^5]: [Elementor, “Responsive editing for mobile and tablets”](https://elementor.com/help/mobile-editing/)
+[^6]: [WordPress Developer Resources, “wp_remote_post()”](https://developer.wordpress.org/reference/functions/wp_remote_post/)
+[^7]: [WordPress Developer Resources, “Transients API”](https://developer.wordpress.org/apis/transients/)
+[^8]: [WordPress Developer Resources, “register_rest_route()”](https://developer.wordpress.org/reference/functions/register_rest_route/)
+[^9]: [Architectural Association of Kenya, “AAK Annual Convention 2026 Event Registration”](https://members.aak.or.ke/eventdetailv2?eid=baM8JnQ3%2BAaNamasUK2rTg%3D%3D)

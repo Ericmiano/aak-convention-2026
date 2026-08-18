@@ -68,3 +68,10 @@
 - [x] Review the implemented source route, live panel, fallback state, and audit notes for WordPress-equivalent requirements.
 - [x] Add the automatic event-information integration, fallback, status language, and source-ownership guidance to the Elementor replication guide.
 - [x] Deliver the revised guide.
+
+## Free-Tier WordPress Guide Revision Checklist
+
+- [x] Identify Elementor Pro, ACF Pro, paid theme, and premium plugin assumptions in the current guide.
+- [x] Replace them with free WordPress/Elementor alternatives and describe the trade-offs.
+- [x] Rewrite installation, templates, live-event display, and launch instructions for the free-tier path.
+- [x] Deliver the corrected free-tier guide.
