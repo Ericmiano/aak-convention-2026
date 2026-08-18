@@ -90,5 +90,6 @@
 
 ## GitHub Source-Control Handoff Checklist
 
-- [ ] Create a private GitHub repository for the current AAK Convention 2026 source and push the verified project history.
-- [ ] Verify the remote repository, branch, and source-control handoff without changing the WordPress live site.
+- [x] Create a private GitHub repository for the current AAK Convention 2026 source and push the verified project history.
+- [x] Verify the remote repository, branch, and source-control handoff without changing the WordPress live site.
+- [x] Change the new GitHub repository visibility to public and verify that its source is accessible.
