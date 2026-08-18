@@ -75,3 +75,20 @@
 - [x] Replace them with free WordPress/Elementor alternatives and describe the trade-offs.
 - [x] Rewrite installation, templates, live-event display, and launch instructions for the free-tier path.
 - [x] Deliver the corrected free-tier guide.
+
+## Draft-Only WordPress Browser Implementation Checklist
+
+- [x] Resume audit of existing draft pages, menu, global styles, plugin setup, and Claude-created work without changing live settings.
+- [x] Compare existing work against the free-tier Convention replication plan and identify only draft-safe next actions.
+- [ ] Upload approved Convention visual assets to the WordPress Media Library without inserting them into published content.
+- [ ] Build the unpublished Draft Header and Draft Footer templates without global display conditions.
+- [ ] Build the Draft Home landing page with the Convention editorial system and review-safe local navigation.
+- [ ] Build the internal Convention draft pages, including Programme, Theme, Speakers, Experience, Build Tours, Venue, and Registration.
+- [ ] Complete approved page layouts, shared draft-only components, and source-labelled content without publishing.
+- [ ] Verify draft previews and record the launch-only actions that remain deliberately untouched.
+- [ ] Deliver the draft implementation status without publishing or altering the live site.
+
+## GitHub Source-Control Handoff Checklist
+
+- [ ] Create a private GitHub repository for the current AAK Convention 2026 source and push the verified project history.
+- [ ] Verify the remote repository, branch, and source-control handoff without changing the WordPress live site.
