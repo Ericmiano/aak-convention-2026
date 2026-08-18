@@ -13,3 +13,13 @@
 - [x] Add responsive hero depth, active-section feedback, and tactile hover states.
 - [x] Verify reduced-motion behavior, mobile responsiveness, builds, and runtime logs.
 - [ ] Save the enhanced interactive version.
+
+## Audit-Driven Improvement Checklist
+
+- [x] Review the remaining audit findings and classify implementation versus external dependencies.
+- [x] Consolidate the color, dark-surface, radius, and shadow system to align with the approved brief.
+- [x] Rebuild the theme treatment as the homepage’s dark editorial high point.
+- [x] Improve initial loading feedback, heading/landmark checks, and decorative-image accessibility treatment.
+- [x] Improve the registration handoff while clearly documenting the members-platform dependency.
+- [x] Validate desktop and mobile routes, motion preference behavior, build output, and runtime logs.
+- [ ] Save the audited improvement version.

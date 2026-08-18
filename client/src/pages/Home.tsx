@@ -29,8 +29,9 @@ export default function Home() {
     </section>
 
     <section className="theme-section">
-      <div className="theme-gridline" aria-hidden="true" /><div className="theme-intro"><SectionLabel index="02" label="The Theme" /><h2>From a field<br />of <em>fragments</em><br />to a shared<br /><strong>structure.</strong></h2></div>
+      <ArchitecturalGrid tone="dark" /><div className="theme-gridline" aria-hidden="true" /><div className="theme-intro"><SectionLabel index="02" label="The Theme" /><h2>From a field<br />of <em>fragments</em><br />to a shared<br /><strong>structure.</strong></h2></div>
       <div className="theme-body"><p>{themeData.paragraphs[1]}</p><Link href="/theme" className="text-action">Read the theme in full <ArrowUpRight size={18} /></Link></div>
+      <div className="theme-transition" aria-label="From fragility through adaptation to resilience"><span>Fragility</span><i /><span>Adaptation</span><i /><span>Resilience</span></div>
       <div className="theme-areas">{themeData.areas.map((area, index) => <Link href="/theme" key={area}><span>0{index + 1}</span><p>{area}</p><ArrowUpRight size={16} /></Link>)}</div>
     </section>
 
@@ -50,7 +51,7 @@ export default function Home() {
       <figure><img src={assets.place} alt="Climate-responsive coastal architecture in Kenya" loading="lazy" /><figcaption>{venueData.name}<br />{venueData.location}</figcaption></figure>
     </section>
 
-    <section className="tours-section editorial-section"><div className="tours-heading"><SectionLabel index="06" label="Build Tours" /><h2>See the built<br />environment<br />in context.</h2></div><div className="tours-list">{toursData.map((tour) => <Link href="/build-tours" key={tour.name}><span>{tour.number}</span><div><h3>{tour.name}</h3><p>{tour.summary}</p></div><ArrowUpRight size={20} /></Link>)}</div></section>
+    <section className="tours-section editorial-section"><div className="tours-heading"><SectionLabel index="08" label="Build Tours" /><h2>See the built<br />environment<br />in context.</h2></div><div className="tours-list">{toursData.map((tour) => <Link href="/build-tours" key={tour.name}><span>{tour.number}</span><div><h3>{tour.name}</h3><p>{tour.summary}</p></div><ArrowUpRight size={20} /></Link>)}</div></section>
     <RegistrationCTA />
   </>;
 }

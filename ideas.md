@@ -94,3 +94,10 @@ The updated execution takes **soft spatial layering** from the `event-spark` ref
 ## Motion System
 
 Motion expresses a Convention moving from fragmentation toward alignment. The header carries a fine reading-progress rule, major editorial fields reveal as they enter the visitor’s reading path, and tectonic lines settle into their contextual anchors. The hero responds gently to desktop pointer movement, giving the architectural image a little depth without becoming parallax. Programme rows deepen and extend when opened, while buttons and image frames respond with compact tactile feedback. All movement is transform- and opacity-based, under 900 ms, and removed for visitors who prefer reduced motion.
+
+## Audit Decisions
+
+- **Brand fidelity:** The primary action and index color is AAK cardinal red (`#B72028`), with a single canonical near-black (`#171714`) anchoring heroes, theme panels, and footer.
+- **Architectural separation:** Border-based fields replace ambient shadows. Strong radius is reserved for primary image and thematic fields; content sections use asymmetric offset edges to form a reading spine.
+- **Thematic emphasis:** The official theme statement is the homepage’s dark editorial high point, with the Fragility → Adaptation → Resilience sequence treated as a spatial progression rather than a small caption.
+- **Registration honesty:** Until AAK exposes approved booking and payment integrations, the site gives a clear, branded explanation and external handoff rather than mimicking a working checkout.

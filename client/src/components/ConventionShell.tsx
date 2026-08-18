@@ -27,7 +27,7 @@ export function ConventionHeader() {
       <div className="header-inner">
         <Link href="/" className="brand-lockup" aria-label="AAK Annual Convention 2026 home" onClick={() => setMenuOpen(false)}>
           <StructuralMark />
-          <span><b>AAK</b><i>Annual Convention<br />2026</i></span>
+          <span className="brand-wordmark"><b>AAK</b><i><strong>Annual</strong><strong>Convention</strong><em>2026</em></i></span>
         </Link>
         <nav className="desktop-nav" aria-label="Main navigation">
           {navItems.map(([href, label]) => <Link key={href} href={href} className={location === href ? "active" : ""}>{label}</Link>)}
@@ -49,7 +49,7 @@ export function ConventionFooter() {
   return (
     <footer className="site-footer">
       <div className="footer-grid">
-        <div className="footer-brand"><StructuralMark /><p>AAK Annual<br />Convention 2026</p></div>
+        <div className="footer-brand"><StructuralMark /><p className="footer-wordmark"><strong>AAK</strong><span>Annual<br />Convention</span><em>2026</em></p></div>
         <div><p className="eyebrow">The Convention</p><p className="footer-statement">16—19 September<br />Diani, Kenya</p></div>
         <div><p className="eyebrow">Secretariat</p><a href={`mailto:${eventData.contact.email}`}>{eventData.contact.email}</a><a href={`tel:${eventData.contact.phone.replace(/\s/g, "")}`}>{eventData.contact.phone}</a></div>
         <div><p className="eyebrow">Association</p><a href={eventData.contact.official} target="_blank" rel="noreferrer">AAK official website <ArrowUpRight size={13} /></a><a href="/register">Registration information</a></div>

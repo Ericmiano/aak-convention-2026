@@ -25,7 +25,7 @@ export function RegistrationCTA({ compact = false }: { compact?: boolean }) {
   return (
     <section className={`registration-cta ${compact ? "compact" : ""}`}>
       <div><SectionLabel index="09" label="Registration" /><h2>Choose your place<br />in the Convention.</h2></div>
-      <div className="cta-details"><p>Continue through AAK’s trusted registration journey to select your ticket, add attendee information, choose a booking type, and select a payment option.</p><a href="/register" className="button-primary">Registration information <ArrowUpRight size={18} /></a></div>
+      <div className="cta-details"><p>Review the official registration journey before continuing to select your ticket, share attendee details, and complete your booking.</p><a href="/register" className="button-primary">Registration information <ArrowUpRight size={18} /></a></div>
     </section>
   );
 }
