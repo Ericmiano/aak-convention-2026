@@ -23,3 +23,11 @@
 - [x] Improve the registration handoff while clearly documenting the members-platform dependency.
 - [x] Validate desktop and mobile routes, motion preference behavior, build output, and runtime logs.
 - [ ] Save the audited improvement version.
+
+## Experience Technical-Tours Checklist
+
+- [x] Confirm the three official technical-tour locations and source image options.
+- [x] Curate location images and factual, source-backed captions.
+- [x] Add a technical-tours editorial feature to the Experience page.
+- [x] Validate the Experience and Build Tours routes on desktop and mobile.
+- [ ] Save the updated project version.

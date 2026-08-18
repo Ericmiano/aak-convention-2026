@@ -81,6 +81,42 @@ export const toursData = [
   { number: "03", name: "Kisite Mpunguti Marine Park & Wasini Island", summary: "A coastal landscape visit framing ecology, community, and place in the wider Convention context." },
 ];
 
+export const technicalTourData = [
+  {
+    number: "01",
+    timing: "18 September / field study",
+    name: "Mwache Multipurpose Dam Project",
+    lens: "Water infrastructure / catchment resilience",
+    image: "/manus-storage/mwache-dam-project_0705ebfb.jpg",
+    alt: "Mwache Multipurpose Dam construction site in Kwale County",
+    summary: "A Kwale County project combining dam construction, catchment management, and capacity building in the Mwache landscape.",
+    sourceLabel: "Coast Development Authority project context",
+    sourceUrl: "https://www.cda.go.ke/mwache_dam",
+  },
+  {
+    number: "02",
+    timing: "18 September / field study",
+    name: "Ukunda Airport Terminal Expansion",
+    lens: "Regional mobility / airport infrastructure",
+    image: "/manus-storage/ukunda-airstrip-project_3871cc0b.jpg",
+    alt: "Ukunda Airstrip runway and apron expansion works in Diani",
+    summary: "A close observation of airside works at Ukunda: runway and apron extension, a new fire station, and Air Traffic Control Tower relocation.",
+    sourceLabel: "Cementers project documentation",
+    sourceUrl: "https://cementers.com/project/extension-of-runway-apron-ukunda-airstrip-diani/",
+  },
+  {
+    number: "03",
+    timing: "19 September / post-Convention field study",
+    name: "Kisite Mpunguti Marine Park & Wasini Island",
+    lens: "Marine habitats / coastal ecology",
+    image: "/manus-storage/kisite-mpunguti-marine-park_941f9490.jpg",
+    alt: "Coastal waters and limestone formations at Kisite Mpunguti Marine Park",
+    summary: "A coastal context shaped by coral islands, marine habitats, and the relationship between protected ecosystems and place.",
+    sourceLabel: "Kenya Wildlife Service park context",
+    sourceUrl: "https://kws.go.ke/park/kisite-mpunguti-marine-national-park-reserve/",
+  },
+];
+
 export const venueData = {
   name: "Diamond Leisure Beach & Golf Resort",
   location: "Diani, Kenya",
